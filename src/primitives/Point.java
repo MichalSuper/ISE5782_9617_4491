@@ -25,9 +25,7 @@ public class Point {
 
     @Override
     public String toString() {
-        return "Point{" +
-                "xyz=" + xyz +
-                '}';
+        return xyz.toString();
     }
 
     public Point add(Vector vector) {
