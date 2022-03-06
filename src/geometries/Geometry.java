@@ -1,5 +1,8 @@
 package geometries;
 
+import primitives.Point;
+import primitives.Vector;
+
 public interface Geometry {
-    public primitives.Vector getNormal(primitives.Point p);
+    public Vector getNormal(Point p);
 }

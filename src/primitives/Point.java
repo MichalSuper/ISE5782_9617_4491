@@ -4,11 +4,23 @@ import java.util.Objects;
 import java.lang.*;
 
 public class Point {
-    final Double3 xyz;
+    Double3 xyz;
 
+    /**
+     * constructor
+     * @param x first number value
+     * @param y second number value
+     * @param z third number value
+     */
     public Point(double x, double y, double z) {
         xyz = new Double3(x,y,z);
     }
+
+    /**
+     * constructor
+     * @param xyz the xyz value
+     */
+    public Point(Double3 xyz) { this.xyz = xyz; }
 
     @Override
     public boolean equals(Object o) {
@@ -29,14 +41,12 @@ public class Point {
     }
 
     public Point add(Vector vector) {
-        return new Point(xyz.d1+ vector.xyz.d1,xyz.d2+ vector.xyz.d2,xyz.d3+ vector.xyz.d3);
+        Double3 newXyz = xyz.add(vector.xyz);
+        return new Point(newXyz);
     }
     public Vector subtract(Point point)  {
         Double3 newXyz = xyz.subtract(point.xyz);
-        if(Double3.ZERO.equals(newXyz)) {
-            throw  new IllegalArgumentException("subtract resulting ZERO vector - not allowed");
-        }
-        return new Vector(newXyz.d1, newXyz.d2, newXyz.d3);
+        return new Vector(newXyz);
     }
 
     public double distanceSquared(Point point){
