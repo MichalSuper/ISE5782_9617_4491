@@ -1,5 +1,7 @@
 package primitives;
 
+import java.lang.*;
+
 public class Vector extends Point {
     public Vector(double x, double y, double z) {
         super(x, y, z);
@@ -48,5 +50,28 @@ public class Vector extends Point {
             throw new IllegalArgumentException("add vector resulting in ZERO vector not allowed");
         }
         return new Vector(result.d1,result.d2, result.d3);
+    }
+    public double dotProduct(Vector v){
+        return this.xyz.d1*v.xyz.d1+
+                this.xyz.d2*v.xyz.d2+
+                this.xyz.d3*v.xyz.d3;
+    }
+    public Vector crossProduct(Vector v){
+        Vector newV= new Vector(this.xyz.d2*v.xyz.d3- this.xyz.d3*v.xyz.d2,
+                this.xyz.d3*v.xyz.d1- this.xyz.d1*v.xyz.d3,
+                this.xyz.d1*v.xyz.d2- this.xyz.d2*v.xyz.d1);
+        if (Double3.ZERO.equals(newV.xyz))
+            throw new IllegalArgumentException("ZERO vector not allowed");
+        return newV;
+    }
+    public double lengthSquared(){
+        Point p= new Point(0,0,0);
+        return super.distanceSquared(p);
+    }
+    public double length(){
+        return Math.sqrt((this.lengthSquared()));
+    }
+    public Vector normalize(){
+        return this.scale(1.0/(this.length()));
     }
 }

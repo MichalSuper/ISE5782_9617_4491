@@ -50,4 +50,5 @@ public class Point {
         return Math.sqrt(this.distanceSquared(point));
     }
 
+
 }
