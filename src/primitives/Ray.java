@@ -6,6 +6,11 @@ public class Ray {
     private Point p0;
     private Vector dir;
 
+    /**
+     * constructor
+     * @param p0 the point
+     * @param dir the vector
+     */
     public Ray(Point p0, Vector dir) {
         this.p0 = p0;
         this.dir = dir.normalize();
@@ -32,6 +37,10 @@ public class Ray {
         return Objects.hash(p0, dir);
     }
 
+    /**
+     * to string
+     * @return the description of ray
+     */
     @Override
     public String toString() {
         return p0.toString() + " , "+dir.toString();
