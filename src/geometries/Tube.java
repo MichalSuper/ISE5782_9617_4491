@@ -8,6 +8,11 @@ public class Tube implements Geometry{
     protected Ray axisRay;
     protected double radius;
 
+    /**
+     * constructor
+     * @param axisRay a ray
+     * @param radius a double radius
+     */
     public Tube(Ray axisRay, double radius) {
         this.axisRay = axisRay;
         this.radius = radius;
@@ -21,6 +26,10 @@ public class Tube implements Geometry{
         return radius;
     }
 
+    /**
+     * to string
+     * @return description of the tube
+     */
     @Override
     public String toString() {
         return "Tube{" +
@@ -29,6 +38,11 @@ public class Tube implements Geometry{
                 '}';
     }
 
+    /**
+     * return the normal of the tube
+     * @param p a point
+     * @return the normal
+     */
     @Override
     public Vector getNormal(Point p) {
         return null;
