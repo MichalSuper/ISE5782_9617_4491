@@ -44,6 +44,10 @@ public class Plane implements Geometry{
         return this.q0;
     }
 
+    /**
+     * getter for normal field
+     * @return
+     */
     public Vector getNormal(){
         return this.normal;
     }
@@ -54,6 +58,6 @@ public class Plane implements Geometry{
      * @return normal
      */
     public Vector getNormal(Point p){
-        return this.normal;
+        return getNormal();
     }
 }

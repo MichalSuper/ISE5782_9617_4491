@@ -3,7 +3,7 @@ package primitives;
 import java.util.Objects;
 
 public class Ray {
-    private Point p0;
+    private Point _p0;
     private Vector dir;
 
     /**
@@ -12,12 +12,12 @@ public class Ray {
      * @param dir the vector
      */
     public Ray(Point p0, Vector dir) {
-        this.p0 = p0;
+        this._p0 = p0;
         this.dir = dir.normalize();
     }
 
     public Point getP0() {
-        return p0;
+        return _p0;
     }
 
     public Vector getDir() {
@@ -29,12 +29,12 @@ public class Ray {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ray ray = (Ray) o;
-        return Objects.equals(p0, ray.p0) && Objects.equals(dir, ray.dir);
+        return Objects.equals(_p0, ray._p0) && Objects.equals(dir, ray.dir);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(p0, dir);
+        return Objects.hash(_p0, dir);
     }
 
     /**
@@ -43,6 +43,6 @@ public class Ray {
      */
     @Override
     public String toString() {
-        return p0.toString() + " , "+dir.toString();
+        return _p0.toString() + " , "+dir.toString();
     }
 }
