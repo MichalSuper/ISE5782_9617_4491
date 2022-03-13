@@ -69,6 +69,7 @@ class VectorTest {
         assertEquals(14, v1.lengthSquared(), "ERROR: lengthSquared() gave wrong value");
     }
 
+
     /**
      * Test method for {@link Vector#length()}.
      */
