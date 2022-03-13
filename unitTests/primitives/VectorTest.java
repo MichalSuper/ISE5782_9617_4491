@@ -115,6 +115,5 @@ class VectorTest {
         // TC11: test zero vector from cross-productof co-lined vectors
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v3)
                 , "crossProduct() for parallel vectors does not throw an exception");
-
     }
 }
