@@ -18,7 +18,8 @@ class SphereTest {
     @Test
     void testGetNormal() {
         // ============ Equivalence Partitions Tests ==============
-        Sphere sph= new Sphere(new Point(0,0,1),1.0);
-        assertEquals(new Vector(0,0,1),sph.getNormal(new Point(0,0,2)),"Wrong normal to sphere");
+        //TC01: Test that the normal is proper
+        Sphere sph = new Sphere(new Point(0, 0, 1), 1.0);
+        assertEquals(new Vector(0, 0, 1), sph.getNormal(new Point(0, 0, 2)), "Wrong normal to sphere");
     }
 }
