@@ -8,7 +8,8 @@ public class Ray {
 
     /**
      * constructor
-     * @param p0 the point
+     *
+     * @param p0  the point
      * @param dir the vector
      */
     public Ray(Point p0, Vector dir) {
@@ -39,10 +40,20 @@ public class Ray {
 
     /**
      * to string
+     *
      * @return the description of ray
      */
     @Override
     public String toString() {
-        return _p0.toString() + " , "+dir.toString();
+        return _p0.toString() + " , " + dir.toString();
+    }
+
+    /**
+     * calculate point on the ray
+     * @param t scalar
+     * @return p0+ v*t
+     */
+    public Point getPoint(double t){
+        return _p0.add(dir.scale(t));
     }
 }

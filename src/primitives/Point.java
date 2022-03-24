@@ -45,6 +45,30 @@ public class Point {
     }
 
     /**
+     * Getter for x coordinate
+     * @return The x coordinate
+     */
+    public double getX() {
+        return xyz.d1;
+    }
+
+    /**
+     * Getter for y coordinate
+     * @return The y coordinate
+     */
+    public double getY() {
+        return xyz.d2;
+    }
+
+    /**
+     * Getter for z coordinate
+     * @return The z coordinate
+     */
+    public double getZ() {
+        return xyz.d3;
+    }
+
+    /**
      * add vector to point
      * @param vector the vector to add
      * @return the point after the adding
