@@ -26,6 +26,9 @@ class SphereTest {
         assertEquals(new Vector(0, 0, 1), sph.getNormal(new Point(0, 0, 2)), "Wrong normal to sphere");
     }
 
+    /**
+     * Test method for {@link Sphere#findIntersections(Ray)} (Ray)}.
+     */
     @Test
     void findIntersections() {
         Sphere sphere = new Sphere(new Point(-3,0,0), 1);
