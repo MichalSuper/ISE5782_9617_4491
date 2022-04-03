@@ -31,10 +31,6 @@ public class Vector extends Point {
         return super.equals(o);
     }
 
-    /**
-     * to string
-     * @return the description of the vector
-     */
     @Override
     public String toString() {
         return "Vector: "+xyz;

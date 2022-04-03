@@ -30,7 +30,7 @@ class SphereTest {
      * Test method for {@link Sphere#findIntersections(Ray)} (Ray)}.
      */
     @Test
-    void findIntersections() {
+    void testFindIntersections() {
         Sphere sphere = new Sphere(new Point(-3,0,0), 1);
         // ============ Equivalence Partitions Tests ==============
 

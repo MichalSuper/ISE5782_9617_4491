@@ -18,7 +18,7 @@ class VectorTest {
      * Test method for {@link primitives.Vector#scale(double)}.
      */
     @Test
-    void scale() {
+    void testScale() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Test that the scaled vector has a scaled length
         assertEquals(3 * v1.length(), v1.scale(3).length(), "scale() gave wrong result");
@@ -33,7 +33,7 @@ class VectorTest {
      * Test method for {@link primitives.Vector#dotProduct(Vector)}.
      */
     @Test
-    void dotProduct() {
+    void testDotProduct() {
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Test that dot product return value is proper
@@ -47,7 +47,7 @@ class VectorTest {
      * Test method for {@link Vector#normalize()}.
      */
     @Test
-    void normalize() {
+    void textNormalize() {
         Vector v = new Vector(1, 2, 3);
         Vector u = v.normalize();
 
@@ -63,7 +63,7 @@ class VectorTest {
      * Test method for {@link Vector#lengthSquared()}.
      */
     @Test
-    void lengthSquared() {
+    void testLengthSquared() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Test that lengthSquared value is proper
         assertEquals(14, v1.lengthSquared(), "ERROR: lengthSquared() gave wrong value");
@@ -74,7 +74,7 @@ class VectorTest {
      * Test method for {@link Vector#length()}.
      */
     @Test
-    void length() {
+    void testLength() {
         Vector v = new Vector(0, 3, 4);
 
         // ============ Equivalence Partitions Tests ==============
@@ -86,7 +86,7 @@ class VectorTest {
      * Test method for {@link primitives.Vector#add(Vector)}.
      */
     @Test
-    void add() {
+    void testAdd() {
         // ============ Equivalence Partitions Tests ==============
         // TC01: Test that add is proper
         assertEquals((v1.add(v2)), new Vector(1, 5, 1), "add() gave wrong result");
@@ -100,7 +100,7 @@ class VectorTest {
      * Test method for {@link primitives.Vector#crossProduct(Vector)}.
      */
     @Test
-    void crossProduct() {
+    void testCrossProduct() {
         // ============ Equivalence Partitions Tests ==============
         Vector vr = v1.crossProduct(v2);
 
@@ -113,7 +113,7 @@ class VectorTest {
         assertTrue(isZero(vr.dotProduct(v2)), "crossProduct() result is not orthogonal to 2nd operand");
 
         // =============== Boundary Values Tests ==================
-        // TC11: test zero vector from cross-productof co-lined vectors
+        // TC11: test zero vector from cross-product of co-lined vectors
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v3)
                 , "crossProduct() for parallel vectors does not throw an exception");
     }

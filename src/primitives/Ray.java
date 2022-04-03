@@ -38,11 +38,6 @@ public class Ray {
         return Objects.hash(_p0, dir);
     }
 
-    /**
-     * to string
-     *
-     * @return the description of ray
-     */
     @Override
     public String toString() {
         return _p0.toString() + " , " + dir.toString();

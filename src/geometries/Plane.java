@@ -7,8 +7,8 @@ import java.util.List;
 import static primitives.Util.*;
 
 public class Plane implements Geometry {
-    private Point q0;
-    private Vector normal;
+    final private Point q0;
+    final private Vector normal;
 
     /**
      * constructor

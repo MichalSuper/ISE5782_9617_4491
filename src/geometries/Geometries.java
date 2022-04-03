@@ -27,20 +27,20 @@ public class Geometries implements Intersectable {
     /**
      * find all intersection points {@link Point}
      * that intersect with a specific ray{@link Ray}
+     *
      * @param ray ray pointing towards the shapes
      * @return immutable list of intersection points {@link Point}
      */
     @Override
     public List<Point> findIntersections(Ray ray) {
-        List<Point> result= new LinkedList<Point>();
-        for(Intersectable item: _intersectables)
-        {
-            List<Point> itemResult= item.findIntersections(ray);
-            if (itemResult!= null)
+        List<Point> result = null;
+        for (Intersectable item : _intersectables) {
+            List<Point> itemResult = item.findIntersections(ray);
+            if (itemResult != null) {
+                if (result == null) result = new LinkedList<>();
                 result.addAll(itemResult);
+            }
         }
-        if(result.isEmpty())
-            return null;
         return result;
     }
 }

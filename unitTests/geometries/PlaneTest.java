@@ -42,7 +42,10 @@ class PlaneTest {
         //TC01: Test that the normal is proper
         Plane pl= new Plane(new Point(0,0,1),new Point(1,0,0),new Point(0,1,0));
         double sqrt3= Math.sqrt(1d/3);
-        assertEquals(new Vector(sqrt3,sqrt3,sqrt3),pl.getNormal(new Point(0,0,1)),"Wrong normal to plane");
+        Vector norm=pl.getNormal(new Point(0,0,1));
+        boolean normal1= new Vector(sqrt3,sqrt3,sqrt3).equals(norm);
+        boolean normal2= new Vector(-sqrt3,-sqrt3,-sqrt3).equals(norm);
+        assertTrue(normal1||normal2,"Wrong normal to plane");
     }
 
     /**
@@ -50,7 +53,7 @@ class PlaneTest {
      */
     @Test
     void findIntersections() {
-        Plane plane = new Plane(new Point(-0.5,-0.5,0), new Point(1,0,0), new Point(0,1,0));
+       Plane plane = new Plane(new Point(-0.5,-0.5,0), new Point(1,0,0), new Point(0,1,0));
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray intersects the plane.

@@ -29,12 +29,13 @@ class TriangleTest {
      * Test method for {@link Triangle#findIntersections(Ray)} (Ray)}.
      */
     @Test
-    void findIntersections() {
+    void testFindIntersections() {
         Triangle triangle = new Triangle(new Point(1,0,0), new Point(0,1,0),new Point(0,0,0));
 
         // ============ Equivalence Partitions Tests ==============
         //TC01: the ray begins inside the triangle
-        assertNull(triangle.findIntersections(new Ray(new Point(0.5,0.5,0), new Vector(1,0,0))),"Ray from triangle outside. EP doesn't work.");
+        assertEquals(triangle.findIntersections(new Ray(new Point(-0.79, -0.62, 0.76), new Vector(1.02, 0.86, -0.76))).size(), 1,
+                "TC01: the func doesn't work when the ray through inside the triangle");
 
         //TC02: the ray begins outside against edge
         assertNull(triangle.findIntersections(new Ray(new Point(0.5,-1,0), new Vector(0,1,0))),"Ray from outside of triangle against edge. EP doesn't work.");

@@ -9,8 +9,8 @@ import java.util.List;
 import static primitives.Util.isZero;
 
 public class Tube implements Geometry{
-    protected Ray axisRay;
-    protected double radius;
+    final protected Ray axisRay;
+    final protected double radius;
 
     /**
      * constructor

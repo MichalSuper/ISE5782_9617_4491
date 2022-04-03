@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.lang.*;
 
 public class Point {
-    Double3 xyz;
+    protected Double3 xyz;
 
     /**
      * constructor
@@ -35,10 +35,6 @@ public class Point {
         return Objects.hash(xyz);
     }
 
-    /**
-     * to string
-     * @return the description of point
-     */
     @Override
     public String toString() {
         return "Point: "+ xyz;
