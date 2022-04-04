@@ -12,6 +12,8 @@ public class Camera {
     private double _height;
     private double _width;
     private double _distance;
+    private ImageWriter imageWriter;
+    private RayTracer rayTracer;
 
     /**
      * constructor of camera
@@ -61,5 +63,28 @@ public class Camera {
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
         return null;
+    }
+
+    public Camera setImageWriter(ImageWriter imageWriter) {
+        this.imageWriter = imageWriter;
+        return this;
+    }
+
+    public Camera setRayTracer(RayTracer rayTracer){
+        this.rayTracer = rayTracer;
+        return this;
+    }
+
+
+    public void writeToImage() {
+        imageWriter.writeToImage();
+    }
+
+    public void renderImage() {
+        //.
+    }
+
+    public void printGrid(int gap, Color color) {
+        imageWriter.printGrid(gap, color);
     }
 }

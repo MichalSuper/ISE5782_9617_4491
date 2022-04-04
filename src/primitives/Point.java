@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.lang.*;
 
 public class Point {
+    public static final Point ZERO = new Point(0d,0d,0d);   // origin of the axis
     protected Double3 xyz;
 
     /**
