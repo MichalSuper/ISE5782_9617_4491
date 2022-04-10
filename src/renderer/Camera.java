@@ -16,6 +16,30 @@ public class Camera {
     private RayTracer rayTracer;
 
     /**
+     * get height method
+     * @return the height of view plane
+     */
+    public double get_height() {
+        return _height;
+    }
+
+    /**
+     * get width method
+     * @return  the width of view plane
+     */
+    public double get_width() {
+        return _width;
+    }
+
+    /**
+     * get distance method
+     * @return the distance between camera and view plane
+     */
+    public double get_distance() {
+        return _distance;
+    }
+
+    /**
      * constructor of camera
      * set the location and vTo, vUp and vRight vectors
      * @param p0 the camera location

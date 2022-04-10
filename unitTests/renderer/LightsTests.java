@@ -14,6 +14,8 @@ import static java.awt.Color.*;
  * 
  * @author Dan
  */
+
+
 public class LightsTests {
 	private Scene scene1 = new Scene("Test scene");
 	private Scene scene2 = new Scene("Test scene") //
@@ -41,10 +43,10 @@ public class LightsTests {
 	private Geometry sphere = new Sphere(new Point(0, 0, -50), 50d) //
 			.setEmission(new Color(BLUE).reduce(2)) //
 			.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(300));
-
 	/**
 	 * Produce a picture of a sphere lighted by a directional light
 	 */
+
 	@Test
 	public void sphereDirectional() {
 		scene1.geometries.add(sphere);
