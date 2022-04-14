@@ -86,7 +86,35 @@ public class Camera {
      * @return the ray passing through pixel(j,i) of the view plane
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        return null;
+        Point Pc = _p0.add(_vTo.scale(_distance)); //Image center
+
+        //Ratio (pixel width & height)
+        double Rx = _width / nX;
+        double Ry = _height / nY;
+
+        Point Pij; //Pixel[i,j] center
+        double Xj = (j - (nX - 1) / 2d) * Rx;
+        double Yi = -(i - (nY - 1) / 2d) * Ry;
+
+        // Pixel[i,j] is the center
+        if (isZero(Xj) && isZero(Yi)) {
+            Pij= Pc;
+            return new Ray(_p0, Pij.subtract(_p0));
+        }
+        // Pixel[i,j] is in the middle column
+        if (isZero(Xj)) {
+            Pij = Pc.add(_vUp.scale(Yi));
+            return new Ray(_p0, Pij.subtract(_p0));
+        }
+        //Pixel[i,j] is in the middle row
+        if (isZero(Yi)) {
+            Pij = Pc.add(_vRight.scale(Xj));
+            return new Ray(_p0, Pij.subtract(_p0));
+        }
+
+        Pij = Pc.add(_vRight.scale(Xj).add(_vUp.scale(Yi)));
+        return new Ray(_p0, Pij.subtract(_p0));
+
     }
 
     public Camera setImageWriter(ImageWriter imageWriter) {
