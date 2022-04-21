@@ -4,6 +4,7 @@ import primitives.*;
 
 /**
  * Ambient light foe all graphic object
+ * @author Michal Superfine & Evgi
  */
 public class AmbientLight {
 

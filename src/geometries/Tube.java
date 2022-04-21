@@ -8,6 +8,10 @@ import java.util.List;
 
 import static primitives.Util.isZero;
 
+/**
+ * Plane Tube represents Tube in ray and radius
+ * @author Michal Superfine & Evgi
+ */
 public class Tube implements Geometry{
     final protected Ray axisRay;
     final protected double radius;

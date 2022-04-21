@@ -11,7 +11,10 @@ import primitives.Point;
 import java.util.LinkedList;
 import java.util.List;
 
-
+/**
+ * Unit tests for integration in Camera class
+ * @author Michal Superfine & Michal Evgi
+ */
 public class IntegrationTests {
 
     /**

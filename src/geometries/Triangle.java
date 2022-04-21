@@ -6,7 +6,10 @@ import java.util.List;
 
 import static primitives.Util.alignZero;
 
-
+/**
+ * Triangle class represents Triangle in 3 3D points
+ * @author Michal Superfine & Evgi
+ */
 public class Triangle extends Polygon implements Geometry {
 
     /**

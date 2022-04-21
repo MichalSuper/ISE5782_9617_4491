@@ -4,6 +4,12 @@ import geometries.Geometries;
 import lighting.AmbientLight;
 import primitives.Color;
 
+/**
+ * Scene class represents Scene in its name, AmbientLight,
+ * Color of background and geometry objects in the scene
+ * This class is responsible for creating and describing the scene
+ * @author Michal Superfine & Evgi
+ */
 public class Scene {
     private final String name;
     private final AmbientLight ambientLight;
@@ -17,22 +23,41 @@ public class Scene {
         geometries = builder.geometries;
     }
 
+    /**
+     * getter of name
+     * @return the name of scene
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * getter of ambient light
+     * @return the ambient light of the scene
+     */
     public AmbientLight getAmbientLight() {
         return ambientLight;
     }
 
+    /**
+     * getter of background
+     * @return the background of the scene
+     */
     public Color getBackground() {
         return background;
     }
 
+    /**
+     * getter of geometries
+     * @return the geometry objects in the scene
+     */
     public Geometries getGeometries() {
         return geometries;
     }
 
+    /**
+     * Builder Class for Scene
+     */
     public static class SceneBuilder {
         private final String name;
         private Color background= Color.BLACK;
@@ -45,16 +70,31 @@ public class Scene {
 
         //chaining method
 
+        /**
+         * setter for background
+         * @param background
+         * @return this scene
+         */
         public SceneBuilder setBackground(Color background) {
             this.background = background;
             return this;
         }
 
+        /**
+         * setter for ambient light
+         * @param ambientLight
+         * @return this scene
+         */
         public SceneBuilder setAmbientLight(AmbientLight ambientLight) {
             this.ambientLight = ambientLight;
             return this;
         }
 
+        /**
+         * setter for geometries
+         * @param geometries geometry objects in the scene
+         * @return this scene
+         */
         public SceneBuilder setGeometries(Geometries geometries) {
             this.geometries = geometries;
             return this;
@@ -62,7 +102,6 @@ public class Scene {
 
         public  Scene build(){
             Scene scene= new Scene(this);
-            //.
             return scene;
         }
     }

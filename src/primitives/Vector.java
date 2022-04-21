@@ -2,6 +2,10 @@ package primitives;
 
 import java.lang.*;
 
+/**
+ * Vector class represents Vector in 3D Point
+ * @author Michal Superfine & Evgi
+ */
 public class Vector extends Point {
     /**
      * constructor

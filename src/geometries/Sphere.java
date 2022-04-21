@@ -8,6 +8,10 @@ import java.util.List;
 
 import static primitives.Util.*;
 
+/**
+ * Sphere class represents Sphere in 3D point center and radius
+ * @author Michal Superfine & Evgi
+ */
 public class Sphere implements Geometry {
     final private Point _center;
     final private double _radius;

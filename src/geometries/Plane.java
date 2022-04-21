@@ -6,6 +6,10 @@ import java.util.List;
 
 import static primitives.Util.*;
 
+/**
+ * Plane class represents plane in 3D Cartesian coordinate and normal
+ * @author Michal Superfine & Evgi
+ */
 public class Plane implements Geometry {
     final private Point q0;
     final private Vector normal;

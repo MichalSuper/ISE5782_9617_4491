@@ -1,7 +1,12 @@
 package primitives;
 
+import java.util.List;
 import java.util.Objects;
 
+/**
+ * Ray class represents Ray in 3D Point and a Vector
+ * @author Michal Superfine & Evgi
+ */
 public class Ray {
     private Point _p0;
     private Vector dir;
@@ -50,5 +55,20 @@ public class Ray {
      */
     public Point getPoint(double t){
         return _p0.add(dir.scale(t));
+    }
+
+    public Point findClosestPoint(List<Point> points){
+        if(points==null || points.isEmpty())
+            return null;
+        Point result= null;
+        Double closest= Double.MAX_VALUE;
+        for (Point p: points) {
+            double temp = p.distance(_p0);
+            if (temp < closest) {
+                closest = temp;
+                result = p;
+            }
+        }
+        return result;
     }
 }
