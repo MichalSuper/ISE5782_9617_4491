@@ -155,19 +155,22 @@ public class Camera {
     /**
      * Function writeToImage produces unoptimized png file of the image according to
      * pixel color matrix in the directory of the project
+     * @return the camera
      */
-    public void writeToImage() {
+    public Camera writeToImage() {
         if (this.imageWriter == null)
             throw new MissingResourceException("No value was added to the image writer", ImageWriter.class.getName(), "");
 
         imageWriter.writeToImage();
+        return this;
     }
 
     /**
      *Sends rays to all pixels in the view plane
      * checks what color each pixel is and colors it
+     * @return the camera
      */
-    public void renderImage() {
+    public Camera renderImage() {
         try {
             if (this.imageWriter == null)
                 throw new MissingResourceException("No value was added to the image writer", ImageWriter.class.getName(), "");
@@ -183,6 +186,7 @@ public class Camera {
         catch (MissingResourceException e) {
             throw new UnsupportedOperationException("Not implemented yet" + e.getClassName());
         }
+        return this;
     }
 
     /**
@@ -200,11 +204,13 @@ public class Camera {
      * Create a network of lines
      * @param gap network interval (in Pixels)
      * @param color color of the network
+     * @return the camera
      */
-    public void printGrid(int gap, Color color) {
+    public Camera printGrid(int gap, Color color) {
         if (this.imageWriter == null)
             throw new MissingResourceException("No value was added to the image writer", ImageWriter.class.getName(), "");
 
         imageWriter.printGrid(gap, color);
+        return this;
     }
 }
