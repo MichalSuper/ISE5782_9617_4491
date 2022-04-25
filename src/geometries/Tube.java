@@ -8,7 +8,11 @@ import java.util.List;
 
 import static primitives.Util.isZero;
 
-public class Tube implements Geometry{
+/**
+ * Plane Tube represents Tube in ray and radius
+ * @author Michal Superfine & Evgi
+ */
+public class Tube extends Geometry{
     final protected Ray axisRay;
     final protected double radius;
 
@@ -60,7 +64,9 @@ public class Tube implements Geometry{
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         return null;
     }
+
+
 }

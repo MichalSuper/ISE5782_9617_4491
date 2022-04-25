@@ -5,7 +5,7 @@ package primitives;
  * non-negative RGB values. The colors are maintained without upper limit of
  * 255. Some additional operations are added that are useful for manipulating
  * light's colors
- * 
+ *
  * @author Dan Zilberstein
  */
 public class Color {
@@ -56,7 +56,7 @@ public class Color {
 
 	/**
 	 * Constructor on base of java.awt.Color object
-	 * 
+	 *
 	 * @param other java.awt.Color's source object
 	 */
 	public Color(java.awt.Color other) {
@@ -105,7 +105,7 @@ public class Color {
 			throw new IllegalArgumentException("Can't scale a color by a negative number");
 		return new Color(rgb.product(k));
 	}
-	
+
 	/**
 	 * Scale the color by a scalar
 	 *
@@ -120,7 +120,7 @@ public class Color {
 
 	/**
 	 * Scale the color by (1 / reduction factor)
-	 * 
+	 *
 	 * @param k reduction factor
 	 * @return new Color object which is the result of the operation
 	 */
@@ -132,7 +132,7 @@ public class Color {
 
 	/**
 	 * Scale the color by (1 / reduction factor)
-	 * 
+	 *
 	 * @param k reduction factor
 	 * @return new Color object which is the result of the operation
 	 */

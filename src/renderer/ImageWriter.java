@@ -12,7 +12,7 @@ import javax.imageio.*;
 /**
  * Image writer class combines accumulation of pixel color matrix and finally
  * producing a non-optimized jpeg image from this matrix. The class although is
- * responsible of holding image related parameters of View Plane - pixel matrix
+ * responsible for holding image related parameters of View Plane - pixel matrix
  * size and resolution
  * 
  * @author Dan
@@ -90,6 +90,11 @@ public class ImageWriter {
 		image.setRGB(xIndex, yIndex, color.getColor().getRGB());
 	}
 
+	/**
+	 * Create a network of lines
+	 * @param gap
+	 * @param color color of the network
+	 */
 	public void printGrid(int gap, Color color) {
 		for (int i = 0; i < nX; i++) {
 			for (int j = 0; j < nY; j++) {

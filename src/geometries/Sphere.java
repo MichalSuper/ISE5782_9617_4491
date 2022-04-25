@@ -8,7 +8,11 @@ import java.util.List;
 
 import static primitives.Util.*;
 
-public class Sphere implements Geometry {
+/**
+ * Sphere class represents Sphere in 3D point center and radius
+ * @author Michal Superfine & Evgi
+ */
+public class Sphere extends Geometry {
     final private Point _center;
     final private double _radius;
 
@@ -58,12 +62,11 @@ public class Sphere implements Geometry {
     /**
      * find all intersection points {@link Point}
      * that intersect with a specific ray{@link Ray}
-     *
      * @param ray ray pointing towards the sphere
-     * @return immutable list of intersection points {@link Point}
+     * @return immutable list of intersection geo points
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         Point p0 = ray.getP0();
         Vector v = ray.getDir();
 
@@ -71,7 +74,7 @@ public class Sphere implements Geometry {
         try {
             u = _center.subtract(p0);
         } catch (IllegalArgumentException ignore) {
-            return List.of(ray.getPoint(_radius));
+            return List.of(new GeoPoint(this,ray.getPoint(_radius)));
         }
 
         double tm = alignZero(v.dotProduct(u));
@@ -86,6 +89,7 @@ public class Sphere implements Geometry {
         if (t2 <= 0) return null;
 
         double t1 = alignZero(tm - th);
-        return t1 <= 0 ? List.of(ray.getPoint(t2)) : List.of(ray.getPoint(t1), ray.getPoint(t2));
+        return t1 <= 0 ? List.of(new GeoPoint(this,ray.getPoint(t2)))
+                : List.of(new GeoPoint(this,ray.getPoint(t1)), new GeoPoint(this,ray.getPoint(t2)));
     }
 }
