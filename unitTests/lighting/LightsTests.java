@@ -88,6 +88,26 @@ public class LightsTests {
     }
 
     /**
+     * Produce a picture of a sphere lighted by directional light, point light and spot light
+     */
+    @Test
+    public void sphereAll(){
+        Point spPL1=new Point(130,0,25);
+        Point spPL2=new Point(-30,100,25);
+        scene1.getGeometries().add(sphere);
+        scene1.lights.add(new DirectionalLight(spCL, new Vector(1, 1.5, -0.5)));
+        scene1.lights.add(new PointLight(spCL, spPL1).setKl(0.0001).setKq(0.0002));
+        scene1.lights.add(new SpotLight(spCL, spPL2, new Vector(3, -10, -2.5)).setKl(0.001).setKq(0.0001));
+
+
+        ImageWriter imageWriter = new ImageWriter("lightSphereAll", 500, 500);
+        camera1.setImageWriter(imageWriter) //
+                .setRayTracer(new RayTracerBasic(scene1)) //
+                .renderImage() //
+                .writeToImage(); //
+    }
+
+    /**
      * Produce a picture of a two triangles lighted by a directional light
      */
     @Test
@@ -138,8 +158,7 @@ public class LightsTests {
     @Test
     public void sphereSpotSharp() {
         scene1.getGeometries().add(sphere);
-        scene1.lights
-                .add(new SpotLight(spCL, spPL, new Vector(1, 1, -0.5)).setNarrowBeam(10).setKl(0.001).setKq(0.00004));
+        scene1.lights.add(new SpotLight(spCL, spPL, new Vector(1, 1, -0.5)).setNarrowBeam(10).setKl(0.001).setKq(0.00004));
 
         ImageWriter imageWriter = new ImageWriter("lightSphereSpotSharp", 500, 500);
         camera1.setImageWriter(imageWriter) //
@@ -157,6 +176,24 @@ public class LightsTests {
         scene2.lights.add(new SpotLight(trCL, trPL, trDL).setNarrowBeam(10).setKl(0.001).setKq(0.00004));
 
         ImageWriter imageWriter = new ImageWriter("lightTrianglesSpotSharp", 500, 500);
+        camera2.setImageWriter(imageWriter) //
+                .setRayTracer(new RayTracerBasic(scene2)) //
+                .renderImage() //
+                .writeToImage(); //
+    }
+
+    @Test
+    public void triangleAll(){
+        Vector trDL1=new Vector(-2,-5,-2);
+        Vector trDL2=new Vector(-2,2,2);
+        Point trPL1=new Point(-5,10,30);
+        Point trPL2=new Point(60,55,-125);
+        scene2.getGeometries().add(triangle1, triangle2);
+        scene2.lights.add(new DirectionalLight(trCL, trDL1));
+        scene2.lights.add(new PointLight(trCL, trPL2).setKl(0.001).setKq(0.0002));
+        scene2.lights.add(new SpotLight(trCL, trPL1, trDL2).setKl(0.001).setKq(0.0001));
+
+        ImageWriter imageWriter = new ImageWriter("lightTriangleAll", 500, 500);
         camera2.setImageWriter(imageWriter) //
                 .setRayTracer(new RayTracerBasic(scene2)) //
                 .renderImage() //
