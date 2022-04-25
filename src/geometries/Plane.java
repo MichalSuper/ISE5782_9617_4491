@@ -10,7 +10,7 @@ import static primitives.Util.*;
  * Plane class represents plane in 3D Cartesian coordinate and normal
  * @author Michal Superfine & Evgi
  */
-public class Plane implements Geometry {
+public class Plane extends Geometry {
     final private Point q0;
     final private Vector normal;
 
@@ -72,10 +72,10 @@ public class Plane implements Geometry {
      * find all intersection points {@link Point}
      * that intersect with a specific ray{@link Ray}
      * @param ray ray pointing towards the plane
-     * @return immutable list of intersection points {@link Point}
+     * @return immutable list of intersection geo points
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         Point p0 = ray.getP0();
         Vector v = ray.getDir();
         Vector n = normal;
@@ -88,7 +88,7 @@ public class Plane implements Geometry {
         double t = alignZero(nQMinusP0 / nv);
         if (t > 0){
             Point p = ray.getPoint(t);
-            return List.of(p);
+            return List.of(new GeoPoint(this,p));
         }
         //t<=0
         return null;

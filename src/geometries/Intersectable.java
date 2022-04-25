@@ -7,12 +7,52 @@ import java.util.List;
  * Common interface for all graphic objects
  * that intersect with a ray{@link Ray}
  */
-public interface Intersectable{
+public abstract class Intersectable{
     /**
      * find all intersection points {@link Point}
      * that intersect with a specific ray{@link Ray}
      * @param ray ray pointing towards the graphic object
      * @return immutable list of intersection points {@link Point}
      */
-    List<Point> findIntersections(Ray ray);
+    public List<Point> findIntersections(Ray ray) {
+        var geoList = findGeoIntersections(ray);
+        return geoList == null ? null
+                : geoList.stream().map(gp -> gp.point).toList();
+    }
+
+
+    public List<GeoPoint> findGeoIntersections(Ray ray){
+        return findGeoIntersectionsHelper(ray);
+    }
+
+    protected abstract List<GeoPoint> findGeoIntersectionsHelper(Ray ray);
+
+    public static class GeoPoint {
+        public Geometry geometry;
+        public Point point;
+
+        /**
+         * constructor for GeoPoint
+         * @param geometry the geometry object
+         * @param point the point
+         */
+        public GeoPoint(Geometry geometry, Point point) {
+            this.geometry = geometry;
+            this.point = point;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+
+        @Override
+        public String toString() {
+            return "GeoPoint{" +
+                    "geometry=" + geometry +
+                    ", point=" + point +
+                    '}';
+        }
+    }
+
 }

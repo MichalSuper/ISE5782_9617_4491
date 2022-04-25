@@ -10,17 +10,18 @@ import static primitives.Util.alignZero;
  * Triangle class represents Triangle in 3 3D points
  * @author Michal Superfine & Evgi
  */
-public class Triangle extends Polygon implements Geometry {
-
+public class Triangle extends Polygon {
     /**
      * find all intersection points {@link Point}
      * that intersect with a specific ray{@link Ray}
      * @param ray ray pointing towards the triangle
-     * @return immutable list of intersection points {@link Point}
+     * @return immutable list of intersection geo points
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> result = plane.findIntersections(ray);
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        List<GeoPoint> result = plane.findGeoIntersectionsHelper(ray);
+        for (GeoPoint g : result)
+            g.geometry=this;
 
         //Check if the ray intersect the plane.
         if (result == null) {

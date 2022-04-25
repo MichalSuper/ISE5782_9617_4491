@@ -12,7 +12,7 @@ import java.util.List;
  * Geometries class represents a list of geometry objects
  * @author Michal Superfine & Evgi
  */
-public class Geometries implements Intersectable {
+public class Geometries extends Intersectable {
     public List<Intersectable> _intersectables;
 
     /**
@@ -41,16 +41,15 @@ public class Geometries implements Intersectable {
 
     /**
      * find all intersection points {@link Point}
-     * that intersect with a specific ray{@link Ray}
-     *
+     * that intersect with a specific ray {@link Ray}
      * @param ray ray pointing towards the shapes
-     * @return immutable list of intersection points {@link Point}
+     * @return immutable list of intersection geo points
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> result = null;
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        List<GeoPoint> result = null;
         for (Intersectable item : _intersectables) {
-            List<Point> itemResult = item.findIntersections(ray);
+            List<GeoPoint> itemResult = item.findGeoIntersectionsHelper(ray);
             if (itemResult != null) {
                 if (result == null) result = new LinkedList<>();
                 result.addAll(itemResult);
