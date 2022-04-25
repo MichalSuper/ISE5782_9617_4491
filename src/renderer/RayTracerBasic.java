@@ -54,6 +54,12 @@ public class RayTracerBasic extends RayTracer {
         return ambientLight.add(emissionLight).add(localEffects);
     }
 
+    /**
+     * calculated light contribution from all light sources
+     * @param geoPoint the geo point we calculate the color of
+     * @param ray ray from the camera to the point
+     * @return the color from the lights at the point
+     */
     private Color calcLocalEffects(GeoPoint geoPoint, Ray ray) {
         Vector v=ray.getDir();
         Vector n=geoPoint.geometry.getNormal(geoPoint.point);
@@ -75,12 +81,30 @@ public class RayTracerBasic extends RayTracer {
         return color;
     }
 
+    /**
+     * Calculate the Specular component of the light at this point
+     * @param ks specular component
+     * @param l direction from light to point
+     * @param n normal from the object at the point
+     * @param nl dot-product n*l
+     * @param v direction from the camera to the point
+     * @param nShininess shininess level
+     * @param lightIntensity light intensity
+     * @return the Specular component at the point
+     */
     private Color calcSpecular(double ks, Vector l, Vector n, double nl, Vector v, int nShininess, Color lightIntensity) {
         Vector r=l.add(n.scale(-2*nl));
         double vr=alignZero(v.dotProduct(r));
         return lightIntensity.scale(ks*Math.pow(Math.max(0,-1*vr),nShininess));
     }
 
+    /**
+     * Calculate the diffusive component of the light at this point
+     * @param kd diffusive component
+     * @param nl dot-product n*l
+     * @param lightIntensity light intensity
+     * @return the diffusive component at the point
+     */
     private Color calcDiffusive(double kd, double nl, Color lightIntensity) {
         return lightIntensity.scale(Math.abs(nl)*kd);
     }

@@ -107,6 +107,11 @@ public class Scene {
             return this;
         }
 
+        /**
+         * setter for light
+         * @param lights the light sources
+         * @return this scene
+         */
         public SceneBuilder setLights(List<LightSource> lights) {
             this.lights = lights;
             return this;

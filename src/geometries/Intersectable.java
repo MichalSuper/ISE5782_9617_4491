@@ -20,13 +20,26 @@ public abstract class Intersectable{
                 : geoList.stream().map(gp -> gp.point).toList();
     }
 
-
+    /**
+     * find all intersection points {@link Point}
+     * that intersect with a specific ray{@link Ray}
+     * @param ray ray pointing towards the graphic object
+     * @return immutable list of intersection geo points {@link GeoPoint}
+     */
     public List<GeoPoint> findGeoIntersections(Ray ray){
         return findGeoIntersectionsHelper(ray);
     }
 
+    /**
+     * helper of findGeoIntersections
+     * @param ray ray pointing towards the graphic object
+     * @return immutable list of intersection geo points {@link GeoPoint}
+     */
     protected abstract List<GeoPoint> findGeoIntersectionsHelper(Ray ray);
 
+    /**
+     * geo point is the point with the geometry object that it's on
+     */
     public static class GeoPoint {
         public Geometry geometry;
         public Point point;
