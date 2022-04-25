@@ -197,7 +197,8 @@ public class Camera {
      */
     private Color castRay(int j, int i) {
         Ray ray = constructRay(imageWriter.getNx(), imageWriter.getNy(), i, j);
-        return rayTracer.traceRay(ray);
+        Color result = rayTracer.traceRay(ray);
+        return result;
     }
 
     /**
