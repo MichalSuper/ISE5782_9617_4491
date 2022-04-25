@@ -182,6 +182,9 @@ public class LightsTests {
                 .writeToImage(); //
     }
 
+    /**
+     * Produce a picture of a two triangle lighted by directional light, point light and spot light
+     */
     @Test
     public void triangleAll(){
         Vector trDL1=new Vector(-2,-5,-2);
