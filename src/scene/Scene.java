@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class Scene {
     private final String name;
-    private final AmbientLight ambientLight;
+    private AmbientLight ambientLight;
     private final Color background;
     private final Geometries geometries;
     public List<LightSource> lights;
@@ -59,6 +59,14 @@ public class Scene {
      */
     public Geometries getGeometries() {
         return geometries;
+    }
+
+    /**
+     * setter for ambient light
+     * @param ambientLight
+     */
+    public void setAmbientLight(AmbientLight ambientLight) {
+        this.ambientLight= ambientLight;
     }
 
     /**

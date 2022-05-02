@@ -18,15 +18,15 @@ public class Triangle extends Polygon {
      * @return immutable list of intersection geo points
      */
     @Override
-    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
-        List<GeoPoint> result = plane.findGeoIntersectionsHelper(ray);
-        for (GeoPoint g : result)
-            g.geometry=this;
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance) {
+        List<GeoPoint> result = plane.findGeoIntersectionsHelper(ray, maxDistance);
 
         //Check if the ray intersect the plane.
         if (result == null) {
             return null;
         }
+        for (GeoPoint g : result)
+            g.geometry=this;
 
         Vector v1 = vertices.get(0).subtract(ray.getP0());
         Vector v2 = vertices.get(1).subtract(ray.getP0());

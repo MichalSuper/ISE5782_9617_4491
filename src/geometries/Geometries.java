@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Geometries class represents a list of geometry objects
+ *
  * @author Michal Superfine & Evgi
  */
 public class Geometries extends Intersectable {
@@ -24,6 +25,7 @@ public class Geometries extends Intersectable {
 
     /**
      * constructor for Geometries
+     *
      * @param geometries a list of geometry objects
      */
     public Geometries(Intersectable... geometries) {
@@ -33,6 +35,7 @@ public class Geometries extends Intersectable {
 
     /**
      * add more geometry objects
+     *
      * @param geometries a list of geometry objects
      */
     public void add(Intersectable... geometries) {
@@ -42,14 +45,15 @@ public class Geometries extends Intersectable {
     /**
      * find all intersection points {@link Point}
      * that intersect with a specific ray {@link Ray}
+     *
      * @param ray ray pointing towards the shapes
      * @return immutable list of intersection geo points
      */
     @Override
-    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance) {
         List<GeoPoint> result = null;
         for (Intersectable item : _intersectables) {
-            List<GeoPoint> itemResult = item.findGeoIntersectionsHelper(ray);
+            List<GeoPoint> itemResult = item.findGeoIntersectionsHelper(ray, maxDistance);
             if (itemResult != null) {
                 if (result == null) result = new LinkedList<>();
                 result.addAll(itemResult);

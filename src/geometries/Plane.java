@@ -8,6 +8,7 @@ import static primitives.Util.*;
 
 /**
  * Plane class represents plane in 3D Cartesian coordinate and normal
+ *
  * @author Michal Superfine & Evgi
  */
 public class Plane extends Geometry {
@@ -53,6 +54,7 @@ public class Plane extends Geometry {
 
     /**
      * getter for normal field
+     *
      * @return
      */
     public Vector getNormal() {
@@ -61,6 +63,7 @@ public class Plane extends Geometry {
 
     /**
      * return the normal of the plane
+     *
      * @param p a point
      * @return normal vector (normalized)
      */
@@ -71,11 +74,12 @@ public class Plane extends Geometry {
     /**
      * find all intersection points {@link Point}
      * that intersect with a specific ray{@link Ray}
+     *
      * @param ray ray pointing towards the plane
      * @return immutable list of intersection geo points
      */
     @Override
-    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance) {
         Point p0 = ray.getP0();
         Vector v = ray.getDir();
         Vector n = normal;
@@ -86,9 +90,9 @@ public class Plane extends Geometry {
             return null;
         double nQMinusP0 = n.dotProduct(q0.subtract(p0));
         double t = alignZero(nQMinusP0 / nv);
-        if (t > 0){
+        if (t > 0 && alignZero(t - maxDistance) <= 0) {
             Point p = ray.getPoint(t);
-            return List.of(new GeoPoint(this,p));
+            return List.of(new GeoPoint(this, p));
         }
         //t<=0
         return null;

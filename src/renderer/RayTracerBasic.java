@@ -17,6 +17,9 @@ import static primitives.Util.alignZero;
  */
 public class RayTracerBasic extends RayTracer {
 
+    //parameter for size of first moving rays for shading rays
+    private static final double DELTA = 0.1;
+
     /**
      * constructor for Ray tracer basic
      * @param scene the scene
@@ -74,8 +77,10 @@ public class RayTracerBasic extends RayTracer {
             Vector l=lightSource.getL(geoPoint.point);
             double nl=alignZero(n.dotProduct(l));
             if(nl*nv>0){
-               Color lightIntensity=lightSource.getIntensity(geoPoint.point);
-               color=color.add(calcDiffusive(kd,nl,lightIntensity),calcSpecular(ks,l,n,nl,v,nShininess,lightIntensity));
+                if (unshaded(lightSource, geoPoint, l, n, nl)){
+                    Color lightIntensity = lightSource.getIntensity(geoPoint.point);
+                    color = color.add(calcDiffusive(kd, nl, lightIntensity), calcSpecular(ks, l, n, nl, v, nShininess, lightIntensity));
+                }
             }
         }
         return color;
@@ -107,5 +112,23 @@ public class RayTracerBasic extends RayTracer {
      */
     private Color calcDiffusive(double kd, double nl, Color lightIntensity) {
         return lightIntensity.scale(Math.abs(nl)*kd);
+    }
+
+    /**
+     * Checking for shading between a point and the light source
+     * @param light the light source
+     * @param gp the peo point which is shaded or not
+     * @param l direction from light to point
+     * @param n normal from the object at the point
+     * @param nl dot-product n*l
+     * @return
+     */
+    private boolean unshaded(LightSource light, GeoPoint gp, Vector l, Vector n, double nl){
+        Vector lightDirection = l.scale(-1); // from point to light source
+        Vector epsVector = n.scale(nl < 0 ? DELTA : -1*DELTA);
+        Point point = gp.point.add(epsVector);
+        Ray lightRay = new Ray(point, lightDirection);
+        List<GeoPoint> intersections = scene.getGeometries().findGeoIntersections(lightRay, light.getDistance(gp.point));
+        return intersections==null;
     }
 }
