@@ -141,4 +141,26 @@ public class RayTracerBasic extends RayTracer {
         List<GeoPoint> intersections = scene.getGeometries().findGeoIntersections(lightRay, light.getDistance(gp.point));
         return intersections==null;
     }
+
+    private Ray reflectedRay(GeoPoint gp, Ray ray, Vector n) {
+        //r = v - 2.(v.n).n
+        Vector v = ray.getDir();
+        double vn = v.dotProduct(n);
+
+        if (vn == 0) {
+            return null;
+        }
+
+        Vector r = v.subtract(n.scale(2 * vn));
+        Vector normalEpsilon = n.scale((vn > 0 ? DELTA : -DELTA));
+        return new Ray(gp.point.add(normalEpsilon), r );
+    }
+
+    private Ray refractedRay(GeoPoint gp, Ray ray, Vector n) {
+        Vector v = ray.getDir();
+        double vn = v.dotProduct(n);
+
+        Vector normalEpsilon = n.scale((vn > 0 ? DELTA : -DELTA));
+        return new Ray(gp.point.add(normalEpsilon), v);
+    }
 }
