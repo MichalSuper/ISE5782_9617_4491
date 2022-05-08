@@ -10,7 +10,10 @@ import geometries.Intersectable.GeoPoint;
  */
 public class Ray {
     private Point _p0;
-    private Vector dir;
+    private Vector _dir;
+
+    //parameter for size of first moving rays for shading rays
+    private static final double DELTA = 0.1;
 
     /**
      * constructor
@@ -20,15 +23,26 @@ public class Ray {
      */
     public Ray(Point p0, Vector dir) {
         this._p0 = p0;
-        this.dir = dir.normalize();
+        this._dir = dir.normalize();
     }
+
+    public Ray(Point p, Vector dir, Vector n) {
+        //point + normal.scale(±DELTA)
+        _dir = dir.normalize();
+
+        double nv = n.dotProduct(_dir);
+
+        Vector normalEpsilon = n.scale((nv > 0 ? DELTA : -DELTA));
+        _p0 = p.add(normalEpsilon);
+    }
+
 
     public Point getP0() {
         return _p0;
     }
 
     public Vector getDir() {
-        return dir;
+        return _dir;
     }
 
     @Override
@@ -36,17 +50,17 @@ public class Ray {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ray ray = (Ray) o;
-        return Objects.equals(_p0, ray._p0) && Objects.equals(dir, ray.dir);
+        return Objects.equals(_p0, ray._p0) && Objects.equals(_dir, ray._dir);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_p0, dir);
+        return Objects.hash(_p0, _dir);
     }
 
     @Override
     public String toString() {
-        return _p0.toString() + " , " + dir.toString();
+        return _p0.toString() + " , " + _dir.toString();
     }
 
     /**
@@ -55,7 +69,7 @@ public class Ray {
      * @return p0+ v*t
      */
     public Point getPoint(double t){
-        return _p0.add(dir.scale(t));
+        return _p0.add(_dir.scale(t));
     }
 
     /**
