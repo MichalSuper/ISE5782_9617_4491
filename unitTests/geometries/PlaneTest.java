@@ -53,7 +53,8 @@ class PlaneTest {
      */
     @Test
     void findIntersections() {
-       Plane plane = new Plane(new Point(-0.5,-0.5,0), new Point(1,0,0), new Point(0,1,0));
+       Plane plane = new Plane(new Point(-0.5,-0.5,0),
+               new Point(1,0,0), new Point(0,1,0));
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: Ray intersects the plane.

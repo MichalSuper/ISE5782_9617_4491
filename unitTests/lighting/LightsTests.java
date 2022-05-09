@@ -18,10 +18,12 @@ public class LightsTests {
     private Scene scene1 = new Scene.SceneBuilder("Test scene").build();
     private Scene scene2 = new Scene.SceneBuilder("Test scene") //
             .setAmbientLight(new AmbientLight(new Color(WHITE), new Double3(0.15))).build();
-    private Camera camera1 = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+    private Camera camera1 = new Camera(new Point(0, 0, 1000),
+            new Vector(0, 0, -1), new Vector(0, 1, 0)) //
             .setVPSize(150, 150) //
             .setVPDistance(1000);
-    private Camera camera2 = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+    private Camera camera2 = new Camera(new Point(0, 0, 1000),
+            new Vector(0, 0, -1), new Vector(0, 1, 0)) //
             .setVPSize(200, 200) //
             .setVPDistance(1000);
 
@@ -78,7 +80,8 @@ public class LightsTests {
     @Test
     public void sphereSpot() {
         scene1.getGeometries().add(sphere);
-        scene1.lights.add(new SpotLight(spCL, spPL, new Vector(1, 1, -0.5)).setKl(0.001).setKq(0.0001));
+        scene1.lights.add(new SpotLight(spCL, spPL, new Vector(1, 1, -0.5))
+                .setKl(0.001).setKq(0.0001));
 
         ImageWriter imageWriter = new ImageWriter("lightSphereSpot", 500, 500);
         camera1.setImageWriter(imageWriter) //
@@ -97,7 +100,8 @@ public class LightsTests {
         scene1.getGeometries().add(sphere);
         scene1.lights.add(new DirectionalLight(spCL, new Vector(1, 1.5, -0.5)));
         scene1.lights.add(new PointLight(spCL, spPL1).setKl(0.0001).setKq(0.0002));
-        scene1.lights.add(new SpotLight(spCL, spPL2, new Vector(3, -10, -2.5)).setKl(0.001).setKq(0.0001));
+        scene1.lights.add(new SpotLight(spCL, spPL2, new Vector(3, -10, -2.5))
+                .setKl(0.001).setKq(0.0001));
 
 
         ImageWriter imageWriter = new ImageWriter("lightSphereAll", 500, 500);
@@ -158,7 +162,8 @@ public class LightsTests {
     @Test
     public void sphereSpotSharp() {
         scene1.getGeometries().add(sphere);
-        scene1.lights.add(new SpotLight(spCL, spPL, new Vector(1, 1, -0.5)).setNarrowBeam(10).setKl(0.001).setKq(0.00004));
+        scene1.lights.add(new SpotLight(spCL, spPL, new Vector(1, 1, -0.5))
+                .setNarrowBeam(10).setKl(0.001).setKq(0.00004));
 
         ImageWriter imageWriter = new ImageWriter("lightSphereSpotSharp", 500, 500);
         camera1.setImageWriter(imageWriter) //
