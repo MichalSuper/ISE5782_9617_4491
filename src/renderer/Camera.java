@@ -10,6 +10,7 @@ import static primitives.Util.*;
  * Camera class represents Camera in 3D Point, 3 Vectors,
  * height, width and distance from view plane,
  * the ImageWriter of the image and a RayTracer
+ *
  * @author Michal Superfine & Evgi
  */
 public class Camera {
@@ -134,6 +135,7 @@ public class Camera {
 
     /**
      * setter for image writer
+     *
      * @param imageWriter
      * @return the camera
      */
@@ -144,6 +146,7 @@ public class Camera {
 
     /**
      * setter for ray tracer
+     *
      * @param rayTracer
      * @return the camera
      */
@@ -155,6 +158,7 @@ public class Camera {
     /**
      * Function writeToImage produces unoptimized png file of the image according to
      * pixel color matrix in the directory of the project
+     *
      * @return the camera
      */
     public Camera writeToImage() {
@@ -166,8 +170,9 @@ public class Camera {
     }
 
     /**
-     *Sends rays to all pixels in the view plane
+     * Sends rays to all pixels in the view plane
      * checks what color each pixel is and colors it
+     *
      * @return the camera
      */
     public Camera renderImage() {
@@ -182,8 +187,7 @@ public class Camera {
                     imageWriter.writePixel(i, j, castRay(j, i));
                 }
             }
-        }
-        catch (MissingResourceException e) {
+        } catch (MissingResourceException e) {
             throw new UnsupportedOperationException("Not implemented yet" + e.getClassName());
         }
         return this;
@@ -191,6 +195,7 @@ public class Camera {
 
     /**
      * send ray to the pixel and check which color it is
+     *
      * @param j first coordinate of the pixel
      * @param i second coordinate of the pixel
      * @return the color of the pixel
@@ -203,7 +208,8 @@ public class Camera {
 
     /**
      * Create a network of lines
-     * @param gap network interval (in Pixels)
+     *
+     * @param gap   network interval (in Pixels)
      * @param color color of the network
      * @return the camera
      */
