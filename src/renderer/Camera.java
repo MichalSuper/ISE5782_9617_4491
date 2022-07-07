@@ -2,7 +2,10 @@ package renderer;
 
 import primitives.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Random;
 
 import static primitives.Util.*;
 
@@ -23,6 +26,63 @@ public class Camera {
     private double _distance;
     private ImageWriter imageWriter;
     private RayTracer rayTracer;
+
+    private int _N = 8;
+    private int _M = 8;
+
+    /*
+    isAntiAliasing- for anti aliasing
+     */
+    private boolean isAntiAliasing = false;
+
+    public Camera setAntiAliasing(boolean antiAliasing) {
+        isAntiAliasing = antiAliasing;
+        return this;
+    }
+
+    /*
+     isSoftShadows- for soft shadows
+     */
+    boolean isSoftShadows = false;
+
+    /**
+     * setter for softShadows
+     *
+     * @param softShadows is soft shadows
+     * @return the camera
+     */
+    public Camera setSoftShadows(boolean softShadows) {
+        isSoftShadows = softShadows;
+        return this;
+    }
+
+
+    /*
+     *  focalDistance - the distance of the  focus.
+     *  aperture      - the radius of the aperture.
+     */
+    private double focalDistance;
+    private double aperture;
+    private boolean isDepthOfField = false;
+
+    /**
+     * setter of Depth of filed. if Depth of filed function is called the camera will be focused for a specific distance.
+     * if Depth of filed will not be called the camera will be focused on the whole scene equally.
+     *
+     * @param focalDistance - the distance of the  focus.
+     * @param aperture      - the radius of the aperture.
+     */
+    public Camera setDepthOfFiled(double focalDistance, double aperture) {
+        this.focalDistance = focalDistance;
+        this.aperture = aperture;
+        isDepthOfField = true;
+        return this;
+    }
+
+    /*
+     * random variable used for stochastic ray creation
+     */
+    private final Random r = new Random();
 
     /**
      * get height method
@@ -133,6 +193,7 @@ public class Camera {
 
     }
 
+
     /**
      * setter for image writer
      *
@@ -202,8 +263,27 @@ public class Camera {
      */
     private Color castRay(int j, int i) {
         Ray ray = constructRay(imageWriter.getNx(), imageWriter.getNy(), i, j);
-        Color result = rayTracer.traceRay(ray);
-        return result;
+        if (isAntiAliasing) {
+            if (_N == 0 || _M == 0)
+                throw new MissingResourceException("You need to set the n*m value for the rays launching", RayTracer.class.getName(), "");
+
+            List<Ray> rays = constructRaysGridFromRay(imageWriter.getNx(), imageWriter.getNy(), _N, _M, ray);
+            Color sum = Color.BLACK;
+            for (Ray rayy : rays) {
+                sum = sum.add(rayTracer.traceRay(rayy, isSoftShadows));
+            }
+            return sum.reduce(rays.size());
+        }
+        if (isDepthOfField) {
+            List<Ray> rays = constructRaysGridFromCamera(_N, _M, ray);
+            Color sum = Color.BLACK;
+            for (Ray rayy : rays) {
+                sum = sum.add(rayTracer.traceRay(rayy, isSoftShadows));
+            }
+            return sum.reduce(rays.size());
+        }
+
+        return rayTracer.traceRay(ray, isSoftShadows);
     }
 
     /**
@@ -220,4 +300,143 @@ public class Camera {
         imageWriter.printGrid(gap, color);
         return this;
     }
+
+    /**
+     * This function get a ray launched from the camera of a pixel and launch others rays
+     * from all the aperture of the camera in direction of the point on the depth of field plane
+     *
+     * @param n   height of the grid
+     * @param m   width of the grid
+     * @param ray the ray that it is already launched from the camera
+     * @return list of rays when every ray is launched from the grid inside a pixel with random emplacement
+     */
+    public List<Ray> constructRaysGridFromCamera(int n, int m, Ray ray) {
+
+        List<Ray> myRays = new LinkedList<>(); //to save all the rays
+
+        double t = _distance / (_vTo.dotProduct(ray.getDir())); //cosinus of the angle
+        Point point = ray.getPoint(t);
+
+        double pixelSize = alignZero((aperture * 2) / n);
+
+        //We call the function constructRayFromPixel like we used to but this time we launch m * n ray from the aperture grid
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                Ray tmpRay = constructRayFromPixel(n, m, j, i, pixelSize, point);
+                //check that the point of base of the ray is inside the aperture circle
+                if (tmpRay.getP0().equals(_p0)) { //to avoid vector ZERO
+                    myRays.add(tmpRay);
+                } else if (tmpRay.getP0().distance(_p0) <= aperture) {
+                    myRays.add(tmpRay);
+                }
+            }
+        }
+        return myRays;
+    }
+
+    /**
+     * This function get a ray launched in the center of a pixel and launch a beam n * m others rays
+     * on the same pixel
+     *
+     * @param nX  number of pixels in a row of view plane
+     * @param nY  number of pixels in a column of view plane
+     * @param n   number of the rays to launch in pixel
+     * @param m   number of the ray to launch in the pixel
+     * @param ray the ray that it is already launched in the center of the pixel
+     * @return list of rays when every ray is launched inside a pixel with random emplacement
+     */
+    public List<Ray> constructRaysGridFromRay(int nX, int nY, int n, int m, Ray ray) {
+
+        Point p0 = ray.getPoint(_distance); //center of the pixel
+        List<Ray> myRays = new LinkedList<>(); //to save all the rays
+
+        double pixelHeight = alignZero(_height / nY);
+        double pixelHWidth = alignZero(_width / nX);
+
+        //We call the function constructRayThroughPixel like we used to but this time we launch m * n ray in the same pixel
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                myRays.add(constructRay(m, n, j, i, pixelHeight, pixelHWidth, p0));
+            }
+        }
+
+        return myRays;
+    }
+
+    /**
+     * This function returns a ray from a point in the aperture circle
+     *
+     * @param nX        grid's width
+     * @param nY        grid's height
+     * @param j         y emplacement of the point
+     * @param i         x emplacement of the point
+     * @param pixelSize size of side of the pixel on the grid
+     * @param point     point on the depth of field plane
+     * @return a ray to the point on the depth of field plane
+     */
+    private Ray constructRayFromPixel(int nX, int nY, double j, double i, double pixelSize, Point point) {
+
+        Point pIJ = _p0;
+
+        //get the emplacement of the base point of the ray
+        double xJ = ((j + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((nX - 1) / 2d)) * pixelSize;
+        double yI = -((i + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((nY - 1) / 2d)) * pixelSize;
+
+        if (xJ != 0) {
+            pIJ = pIJ.add(_vRight.scale(xJ));
+        }
+        if (yI != 0) {
+            pIJ = pIJ.add(_vUp.scale(yI));
+        }
+
+        Vector vIJ = point.subtract(pIJ);
+
+        return new Ray(pIJ, vIJ);
+    }
+
+    /**
+     * The function constructs a ray from Camera location through a point (i,j) on the grid of a
+     * pixel in the view plane
+     *
+     * @param m      grid's height
+     * @param n      grid's width
+     * @param j      number of the pixel in the row
+     * @param i      number of the pixel in the column
+     * @param pixelH height of the pixel
+     * @param pixelW width of the pixel
+     * @param pc     pixel center
+     * @return the ray through pixel's center
+     */
+    private Ray constructRay(int m, int n, double j, double i, double pixelH, double pixelW, Point pc) {
+
+        Point pIJ = pc;
+
+        //Ry = height / nY : height of a pixel
+        double rY = pixelH / n;
+        //Ry = weight / nX : width of a pixel
+        double rX = pixelW / m;
+        //xJ is the value of width we need to move from center to get to the point
+        //we get to the bottom/top of the pixel and then we move randomly in the pixel to get the point
+        double xJ = ((j + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((m - 1) / 2d)) * rX;
+        //yI is the value of height we need to move from center to get to the point
+        //we get to the side of the pixel and then we move randomly in the pixel to get the point
+        double yI = -((i + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((n - 1) / 2d)) * rY;
+
+        if (xJ != 0) {
+            pIJ = pIJ.add(_vRight.scale(xJ));
+        }
+        if (yI != 0) {
+            pIJ = pIJ.add(_vUp.scale(yI));
+        }
+
+        //get vector from camera p0 to the point
+        Vector vIJ = pIJ.subtract(_p0);
+
+        //return ray to the center of the pixel
+        return new Ray(_p0, vIJ);
+
+    }
+
 }

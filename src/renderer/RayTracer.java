@@ -27,5 +27,5 @@ public abstract class RayTracer {
      * @param ray a ray
      * @return the color of the closet point the ray cut
      */
-    public abstract Color traceRay(Ray ray);
+    public abstract Color traceRay(Ray ray, boolean isSoftShadows);
 }

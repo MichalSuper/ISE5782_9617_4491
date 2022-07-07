@@ -1,8 +1,11 @@
 package primitives;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import geometries.Intersectable.GeoPoint;
+
+import static primitives.Util.random;
 
 /**
  * Ray class represents Ray in 3D Point and a Vector

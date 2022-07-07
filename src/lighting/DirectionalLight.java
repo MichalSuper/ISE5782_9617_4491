@@ -4,6 +4,8 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.List;
+
 /**
  * class for a direction light without position
  * @author michal superfine & evgi
@@ -40,6 +42,11 @@ public class DirectionalLight extends Light implements LightSource{
     @Override
     public Vector getL(Point p) {
         return direction;
+    }
+
+    @Override
+    public List<Vector> getListL(Point p) {
+        return List.of(getL(p));
     }
 
     @Override

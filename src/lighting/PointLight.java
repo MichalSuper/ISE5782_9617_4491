@@ -4,6 +4,10 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * class for a point light with position and without direction
  * @author michal superfine & evgi
@@ -12,6 +16,7 @@ public class PointLight extends Light implements LightSource{
 
     private Point position;
     private double kC, kL, kQ;
+    private double radius=50;
 
     /**
      * constructor of point light
@@ -82,6 +87,36 @@ public class PointLight extends Light implements LightSource{
         if(!p.equals(position))
             return p.subtract(position).normalize();
         return null;
+    }
+
+    @Override
+    public List<Vector> getListL(Point p) {
+        Random r = new Random();
+        List<Vector> vectors = new LinkedList();
+        for (double i = - radius; i < radius; i += radius / 10) {
+            for (double j = - radius; j < radius; j += radius / 10) {
+                if (i != 0 && j != 0) {
+                    Point point = position.add(new Vector(i, j,0.1d));
+                    if (point.equals(position)){
+                        vectors.add(p.subtract(point).normalize());
+                    }
+                    else{
+                        try{
+                            if (point.subtract(position).dotProduct(point.subtract(position)) <= radius * radius){
+                                vectors.add(p.subtract(point).normalize());
+                            }
+                        }
+                        catch (Exception e){
+                            vectors.add(p.subtract(point).normalize());
+                        }
+
+                    }
+                }
+
+            }
+        }
+        vectors.add(getL(p));
+        return vectors;
     }
 
     /**

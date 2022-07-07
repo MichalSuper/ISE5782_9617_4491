@@ -2,6 +2,8 @@ package lighting;
 
 import primitives.*;
 
+import java.util.List;
+
 /**
  * interface for all the lights
  */
@@ -20,6 +22,13 @@ public interface LightSource {
      * @return the direction from the light to the point
      */
     public Vector getL(Point p);
+
+    /**
+     * Get the direction of the light from a point
+     * @param p the point
+     * @return the direction
+     */
+    List<Vector> getListL(Point p);
 
     /**
      * calculate the distance between the point to the light source
