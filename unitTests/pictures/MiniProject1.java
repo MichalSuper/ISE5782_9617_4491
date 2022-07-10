@@ -180,7 +180,7 @@ public class MiniProject1 {
                 new Vector(-18, -11, -20)));
 
         camera.setImageWriter(new ImageWriter("miniProject", 1000, 1000)) //
-                .setAntiAliasing(true)
+                .setMultithreading(4)
                 .renderImage() //
                 .writeToImage();
     }

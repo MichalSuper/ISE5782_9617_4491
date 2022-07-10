@@ -1,12 +1,13 @@
 package renderer;
 
+import geometries.Plane;
+import multiThreading.ThreadPool;
 import primitives.*;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Random;
-
+import static java.lang.Math.sqrt;
 import static primitives.Util.*;
 
 /**
@@ -57,27 +58,111 @@ public class Camera {
     }
 
 
-    /*
-     *  focalDistance - the distance of the  focus.
-     *  aperture      - the radius of the aperture.
+    /**
+     * A boolean variable that determines whether to use depth of filed.
      */
-    private double focalDistance;
-    private double aperture;
-    private boolean isDepthOfField = false;
+    private boolean isDepthOfFiled = false;
+
+    /** Aperture properties. **/
 
     /**
-     * setter of Depth of filed. if Depth of filed function is called the camera will be focused for a specific distance.
-     * if Depth of filed will not be called the camera will be focused on the whole scene equally.
-     *
-     * @param focalDistance - the distance of the  focus.
-     * @param aperture      - the radius of the aperture.
+     * number with integer square for the matrix of points.
      */
-    public Camera setDepthOfFiled(double focalDistance, double aperture) {
-        this.focalDistance = focalDistance;
-        this.aperture = aperture;
-        isDepthOfField = true;
+    private int APERTURE_NUMBER_OF_POINTS = 100;
+
+    /**
+     * Declaring a variable called apertureSize of type double.
+     */
+    private double apertureSize;
+
+    /**
+     * Creating an array of Point objects.
+     */
+    private Point[] aperturePoints;
+
+    /** Focal plane parameters. **/
+
+    /**
+     * as instructed it is a constant value of the class.
+     */
+    private double FP_distance;
+
+    /**
+     * Declaring a variable called FOCAL_PLANE of type Plane.
+     */
+    private Plane FOCAL_PLANE;
+
+    /** Depth Of Filed improvements **/
+
+    /**
+     * This function sets the depth of field to the value of the parameter.
+     *
+     * @param isDepthOfFiled If true, the camera will have a depth of field effect.
+     */
+    public Camera setDepthOfFiled(boolean isDepthOfFiled) {
+        this.isDepthOfFiled = isDepthOfFiled;
         return this;
     }
+
+    /**
+     * The function sets the distance of the focal plane from the camera's position
+     *
+     * @param distance The distance from the camera to the focal plane.
+     * @return The camera itself.
+     */
+    public Camera setFPDistance(double distance) {
+        this.FP_distance = distance;
+        this.FOCAL_PLANE = new Plane(this._p0.add(this._vTo.scale(FP_distance)), this._vTo);
+        return this;
+    }
+
+    /**
+     * This function sets the aperture size of the camera and initializes the points of the aperture.
+     *
+     * @param size the size of the aperture.
+     * @return The camera object itself.
+     */
+    public Camera setApertureSize(double size) {
+        this.apertureSize = size;
+
+        //initializing the points of the aperture.
+        if (size != 0) initializeAperturePoint();
+
+        return this;
+    }
+
+    /**
+     * The function initializes the aperture points array by calculating the distance between the points and the initial
+     * point, and then initializing the array with the points
+     */
+    private void initializeAperturePoint() {
+        //the number of points in a row
+        int pointsInRow = (int) sqrt(this.APERTURE_NUMBER_OF_POINTS);
+
+        //the array of point saved as an array
+        this.aperturePoints = new Point[pointsInRow * pointsInRow];
+
+        //calculating the initial values.
+        double pointsDistance = (this.apertureSize * 2) / pointsInRow;
+        //calculate the initial point to be the point with coordinates outside the aperture in the down left point, so we won`t have to deal with illegal vectors.
+        Point initialPoint = this._p0
+                .add(this._vUp.scale(-this.apertureSize - pointsDistance / 2)
+                        .add(this._vRight.scale(-this.apertureSize - pointsDistance / 2)));
+
+        //initializing the points array
+        for (int i = 1; i <= pointsInRow; i++) {
+            for (int j = 1; j <= pointsInRow; j++) {
+                this.aperturePoints[(i - 1) + (j - 1) * pointsInRow] = initialPoint
+                        .add(this._vUp.scale(i * pointsDistance).add(this._vRight.scale(j * pointsDistance)));
+            }
+        }
+    }
+
+    private ThreadPool<Pixel> threadPool = null;
+    /**
+     * Next pixel of the scene
+     */
+    private Pixel nextPixel = null;
 
     /*
      * random variable used for stochastic ray creation
@@ -243,9 +328,20 @@ public class Camera {
             if (this.rayTracer == null)
                 throw new MissingResourceException("No value was added to the ray tracer", RayTracer.class.getName(), "");
 
-            for (int i = 0; i < imageWriter.getNx(); i++) {
-                for (int j = 0; j < imageWriter.getNy(); j++) {
-                    imageWriter.writePixel(i, j, castRay(j, i));
+            final int nX = imageWriter.getNx();
+            final int nY = imageWriter.getNy();
+
+            //rendering the image with multithreaded
+            if (threadPool != null) {
+                nextPixel = new Pixel(0, 0);
+                threadPool.execute();
+                threadPool.join();
+                return this;
+            }
+
+            for (int i = 0; i < nY; i = ++i) {
+                for (int j = 0; j < nX; ++j) {
+                    this.imageWriter.writePixel(j, i, castRay(j, i));
                 }
             }
         } catch (MissingResourceException e) {
@@ -262,7 +358,7 @@ public class Camera {
      * @return the color of the pixel
      */
     private Color castRay(int j, int i) {
-        Ray ray = constructRay(imageWriter.getNx(), imageWriter.getNy(), i, j);
+        Ray ray = constructRay(imageWriter.getNx(), imageWriter.getNy(), j, i);
         if (isAntiAliasing) {
             if (_N == 0 || _M == 0)
                 throw new MissingResourceException("You need to set the n*m value for the rays launching", RayTracer.class.getName(), "");
@@ -274,13 +370,8 @@ public class Camera {
             }
             return sum.reduce(rays.size());
         }
-        if (isDepthOfField) {
-            List<Ray> rays = constructRaysGridFromCamera(_N, _M, ray);
-            Color sum = Color.BLACK;
-            for (Ray rayy : rays) {
-                sum = sum.add(rayTracer.traceRay(rayy, isSoftShadows));
-            }
-            return sum.reduce(rays.size());
+        if (isDepthOfFiled) {
+            return averagedBeamColor(ray);
         }
 
         return rayTracer.traceRay(ray, isSoftShadows);
@@ -299,40 +390,6 @@ public class Camera {
 
         imageWriter.printGrid(gap, color);
         return this;
-    }
-
-    /**
-     * This function get a ray launched from the camera of a pixel and launch others rays
-     * from all the aperture of the camera in direction of the point on the depth of field plane
-     *
-     * @param n   height of the grid
-     * @param m   width of the grid
-     * @param ray the ray that it is already launched from the camera
-     * @return list of rays when every ray is launched from the grid inside a pixel with random emplacement
-     */
-    public List<Ray> constructRaysGridFromCamera(int n, int m, Ray ray) {
-
-        List<Ray> myRays = new LinkedList<>(); //to save all the rays
-
-        double t = _distance / (_vTo.dotProduct(ray.getDir())); //cosinus of the angle
-        Point point = ray.getPoint(t);
-
-        double pixelSize = alignZero((aperture * 2) / n);
-
-        //We call the function constructRayFromPixel like we used to but this time we launch m * n ray from the aperture grid
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                Ray tmpRay = constructRayFromPixel(n, m, j, i, pixelSize, point);
-                //check that the point of base of the ray is inside the aperture circle
-                if (tmpRay.getP0().equals(_p0)) { //to avoid vector ZERO
-                    myRays.add(tmpRay);
-                } else if (tmpRay.getP0().distance(_p0) <= aperture) {
-                    myRays.add(tmpRay);
-                }
-            }
-        }
-        return myRays;
     }
 
     /**
@@ -363,37 +420,6 @@ public class Camera {
         }
 
         return myRays;
-    }
-
-    /**
-     * This function returns a ray from a point in the aperture circle
-     *
-     * @param nX        grid's width
-     * @param nY        grid's height
-     * @param j         y emplacement of the point
-     * @param i         x emplacement of the point
-     * @param pixelSize size of side of the pixel on the grid
-     * @param point     point on the depth of field plane
-     * @return a ray to the point on the depth of field plane
-     */
-    private Ray constructRayFromPixel(int nX, int nY, double j, double i, double pixelSize, Point point) {
-
-        Point pIJ = _p0;
-
-        //get the emplacement of the base point of the ray
-        double xJ = ((j + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((nX - 1) / 2d)) * pixelSize;
-        double yI = -((i + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((nY - 1) / 2d)) * pixelSize;
-
-        if (xJ != 0) {
-            pIJ = pIJ.add(_vRight.scale(xJ));
-        }
-        if (yI != 0) {
-            pIJ = pIJ.add(_vUp.scale(yI));
-        }
-
-        Vector vIJ = point.subtract(pIJ);
-
-        return new Ray(pIJ, vIJ);
     }
 
     /**
@@ -439,4 +465,114 @@ public class Camera {
 
     }
 
+    /**
+     * It takes a ray, finds the point where it intersects the focal plane, and then shoots rays from the aperture points
+     * to that point. It then averages the colors of all the rays
+     *
+     * @param ray The ray that is being traced.
+     * @return The average color of the image.
+     */
+    private Color averagedBeamColor(Ray ray) {
+        Color averageColor = Color.BLACK, apertureColor;
+        int numOfPoints = this.aperturePoints.length;
+        Ray apertureRay;
+        Point focalPoint = this.FOCAL_PLANE.findGeoIntersections(ray).get(0).point;
+        for (Point aperturePoint : this.aperturePoints) {
+            apertureRay = new Ray(aperturePoint, focalPoint.subtract(aperturePoint));
+            apertureColor = rayTracer.traceRay(apertureRay, isSoftShadows);
+            averageColor = averageColor.add(apertureColor.reduce(numOfPoints));
+        }
+        return averageColor;
+    }
+
+    /**
+     * Chaining method for setting number of threads.
+     * If set to 1, the render won't use the thread pool.
+     * If set to greater than 1, the render will use the thread pool with the given threads.
+     * If set to 0, the thread pool will pick the number of threads.
+     *
+     * @param threads number of threads to use
+     * @return the current render
+     * @throws IllegalArgumentException when threads is less than 0
+     */
+    public Camera setMultithreading(int threads) {
+        if (threads < 0) {
+            throw new IllegalArgumentException("threads can be equals or greater to 0");
+        }
+
+        // run as single threaded without the thread pool
+        if (threads == 1) {
+            threadPool = null;
+            return this;
+        }
+
+        threadPool = new ThreadPool<Pixel>() // the thread pool choose the number of threads (in0 case threads is 0)
+                .setParamGetter(this::getNextPixel)
+                .setTarget(this::renderImageMultithreaded);
+        if (threads > 0) {
+            threadPool.setNumThreads(threads);
+        }
+
+        return this;
+    }
+
+    /**
+     * Returns the next pixel to draw on multithreaded rendering.
+     * If finished to draw all pixels, returns {@code null}.
+     */
+    private synchronized Pixel getNextPixel() {
+
+        // notifies the main thread in order to print the percent
+        notifyAll();
+
+
+        Pixel result = new Pixel();
+        int nX = imageWriter.getNx();
+        int nY = imageWriter.getNy();
+
+        // updates the row of the next pixel to draw
+        // if got to the end, returns null
+        if (nextPixel.col >= nX) {
+            if (++nextPixel.row >= nY) {
+                return null;
+            }
+            nextPixel.col = 0;
+        }
+
+        result.col = nextPixel.col++;
+        result.row = nextPixel.row;
+        return result;
+    }
+
+    /**
+     * Renders a given pixel on multithreaded rendering.
+     * If the given pixel is null, returns false which means kill the thread.
+     *
+     * @param p the pixel to render
+     */
+    private boolean renderImageMultithreaded(Pixel p) {
+        if (p == null) {
+            return false; // kill the thread
+        }
+
+        int nX = imageWriter.getNx();
+        int nY = imageWriter.getNy();
+        this.imageWriter.writePixel(p.col, p.row, castRay(p.col, p.row));
+        return true; // continue the rendering
+    }
+
+    /**
+     * Helper class to represent a pixel to draw in a multithreading rendering.
+     */
+    private static class Pixel {
+        public int col, row;
+
+        public Pixel(int col, int row) {
+            this.col = col;
+            this.row = row;
+        }
+
+        public Pixel() {
+        }
+    }
 }
