@@ -25,10 +25,11 @@ public interface LightSource {
 
     /**
      * Get the direction of the light from a point
-     * @param p the point
+     *
+     * @param p         the point
      * @return the direction
      */
-    List<Vector> getListL(Point p);
+    Vector[][] getListL(Point p);
 
     /**
      * calculate the distance between the point to the light source

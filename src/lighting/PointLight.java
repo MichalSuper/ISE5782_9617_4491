@@ -4,9 +4,6 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * class for a point light with position and without direction
@@ -18,6 +15,7 @@ public class PointLight extends Light implements LightSource{
     private double kC, kL, kQ;
     private double radius=50;
 
+    private final int numOfRays=10;
     /**
      * constructor of point light
      * @param intensity=the color of the light
@@ -90,32 +88,21 @@ public class PointLight extends Light implements LightSource{
     }
 
     @Override
-    public List<Vector> getListL(Point p) {
-        Random r = new Random();
-        List<Vector> vectors = new LinkedList();
-        for (double i = - radius; i < radius; i += radius / 10) {
-            for (double j = - radius; j < radius; j += radius / 10) {
+    public Vector[][] getListL(Point p) {
+        Vector[][] vectors = new Vector[2 * numOfRays][2 * numOfRays];
+        int row = 0;
+        int column;
+        double y = getL(p).getY();
+        for (double i = -radius; i < radius; i += radius / numOfRays, ++row) {
+            column = 0;
+            for (double j = -radius; j < radius; j += radius / numOfRays, ++column) {
                 if (i != 0 && j != 0) {
-                    Point point = position.add(new Vector(i, j,0.1d));
-                    if (point.equals(position)){
-                        vectors.add(p.subtract(point).normalize());
-                    }
-                    else{
-                        try{
-                            if (point.subtract(position).dotProduct(point.subtract(position)) <= radius * radius){
-                                vectors.add(p.subtract(point).normalize());
-                            }
-                        }
-                        catch (Exception e){
-                            vectors.add(p.subtract(point).normalize());
-                        }
-
-                    }
-                }
-
+                    Point point = position.add(new Vector(i, y, j));
+                    vectors[row][column] = (p.subtract(point).normalize());
+                } else
+                    vectors[row][column] = getL(p);
             }
         }
-        vectors.add(getL(p));
         return vectors;
     }
 

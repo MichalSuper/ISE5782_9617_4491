@@ -47,7 +47,7 @@ public class MiniProject1 {
 
         scene.getGeometries().add(
                 new Plane(new Point(0, 0, 0), new Vector(0, 0, 1))
-                        .setEmission(new Color(252, 139, 255))
+                        .setEmission(new Color(252, 138, 255))
                         .setMaterial(new Material().setShininess(20)),
                 new Polygon(new Point(30, 25, 0), new Point(30, -25, 0),
                         new Point(30, -25, 40), new Point(30, 25, 40))
@@ -171,7 +171,7 @@ public class MiniProject1 {
         pyramid3(scene, -25.21,7.71,0, new Color(73, 113, 13),0.3, 0.2, 10);
         pyramid2(scene, -20.74,25.11,0, new Color(73, 113, 13),0.3, 0.2, 10);
 
-                scene.lights.add(new PointLight(new Color(131, 131, 131), new Point(-100, 100, 600))
+        scene.lights.add(new PointLight(new Color(131, 131, 131), new Point(-100, 100, 600))
                 .setKl(0.0004).setKq(0.0000006));
         scene.lights.add(new SpotLight(new Color(100, 100, 100), new Point(30, 25, 40),
                 new Vector(-2, -1, -2))
@@ -179,8 +179,11 @@ public class MiniProject1 {
         scene.lights.add(new DirectionalLight(new Color(100, 100, 100),
                 new Vector(-18, -11, -20)));
 
+
         camera.setImageWriter(new ImageWriter("miniProject", 1000, 1000)) //
                 .setMultithreading(4)
+                .setAntiAliasing(true)
+                .setSS(true)
                 .renderImage() //
                 .writeToImage();
     }

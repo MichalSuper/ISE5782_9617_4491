@@ -25,7 +25,9 @@ public abstract class RayTracer {
      * returns its color if found any point
      * and returns the color background if it doesn't
      * @param ray a ray
+     * @param isSoftShadows is soft shadow
+     * @param isSS is adaptive super sampling
      * @return the color of the closet point the ray cut
      */
-    public abstract Color traceRay(Ray ray, boolean isSoftShadows);
+    public abstract Color traceRay(Ray ray, boolean isSoftShadows, boolean isSS, int depth);
 }

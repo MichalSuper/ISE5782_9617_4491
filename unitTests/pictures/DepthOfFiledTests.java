@@ -44,5 +44,10 @@ public class DepthOfFiledTests {
                 .setApertureSize(1)
                 .renderImage() //
                 .writeToImage();
+
+        camera.setImageWriter(new ImageWriter("antiAnalysing", 500, 500)) //
+                .setAntiAliasing(true)
+                .renderImage() //
+                .writeToImage();
     }
 }

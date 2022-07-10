@@ -50,15 +50,17 @@ public class RayTracerBasic extends RayTracer {
      * and returns the color background if it doesn't
      *
      * @param ray a ray
+     * @param isSoftShadows is soft shadow
+     * @param isSS is adaptive super sampling
      * @return the color of the closet point the ray cut
      */
     @Override
-    public Color traceRay(Ray ray, boolean isSoftShadows) {
+    public Color traceRay(Ray ray, boolean isSoftShadows, boolean isSS, int depth) {
         GeoPoint closestPoint = findClosestIntersection(ray);
         if (closestPoint == null)
             //ray did not intersect any geometrical object
             return scene.getBackground();
-        return calcColor(closestPoint, ray, isSoftShadows);
+        return calcColor(closestPoint, ray, isSoftShadows, isSS, depth);
     }
 
     /**
@@ -66,10 +68,12 @@ public class RayTracerBasic extends RayTracer {
      *
      * @param closestPoint the point that we calculate its color
      * @param ray          the ray towards the pixel
+     * @param isSoftShadows is soft shadow
+     * @param isSS is adaptive super sampling
      * @return the color at this point with the ambient light, local and global effects
      */
-    private Color calcColor(GeoPoint closestPoint, Ray ray, boolean isSoftShadows) {
-        return calcColor(closestPoint, ray, MAX_CALC_COLOR_LEVEL, INITIAL_K, isSoftShadows)
+    private Color calcColor(GeoPoint closestPoint, Ray ray, boolean isSoftShadows, Boolean isSS, int depth) {
+        return calcColor(closestPoint, ray, MAX_CALC_COLOR_LEVEL, INITIAL_K, isSoftShadows, isSS, depth)
                 .add(scene.getAmbientLight().getIntensity());
     }
 
@@ -79,12 +83,14 @@ public class RayTracerBasic extends RayTracer {
      * @param geoPoint the point that we calculate its color
      * @param ray      the ray towards the pixel
      * @param level    the level of the recursion
+     * @param isSoftShadows is soft shadow
+     * @param isSS is adaptive super sampling
      * @return the color at this point with the local and global effects
      */
-    private Color calcColor(GeoPoint geoPoint, Ray ray, int level, Double3 k, boolean isSoftShadows) {
+    private Color calcColor(GeoPoint geoPoint, Ray ray, int level, Double3 k, boolean isSoftShadows, boolean isSS,int depth) {
         Color color = geoPoint.geometry.getEmission()
-                .add(calcLocalEffects(geoPoint, ray, k, isSoftShadows));
-        return 1 == level ? color : color.add(calcGlobalEffects(geoPoint, ray, level, k, isSoftShadows));
+                .add(calcLocalEffects(geoPoint, ray, k, isSoftShadows, isSS, depth));
+        return 1 == level ? color : color.add(calcGlobalEffects(geoPoint, ray, level, k, isSoftShadows, isSS, depth));
     }
 
     /**
@@ -93,9 +99,11 @@ public class RayTracerBasic extends RayTracer {
      * @param intersection the closet point intersect with the ray
      * @param ray          the raya from the camera
      * @param level        the level of the recursion
+     * @param isSoftShadows is soft shadow
+     * @param isSS is adaptive super sampling
      * @return the global effects color
      */
-    private Color calcGlobalEffects(GeoPoint intersection, Ray ray, int level, Double3 k, boolean isSoftShadows) {
+    private Color calcGlobalEffects(GeoPoint intersection, Ray ray, int level, Double3 k, boolean isSoftShadows, boolean isSS, int depth) {
         Point p = intersection.point;
         Geometry g = intersection.geometry;
         Vector n = g.getNormal(p);
@@ -105,14 +113,14 @@ public class RayTracerBasic extends RayTracer {
             Ray reflectedRay = constructReflectedRay(p, ray, n);
             GeoPoint reflectedPoint = findClosestIntersection(reflectedRay);
             if (reflectedPoint != null)
-                color = color.add(calcColor(reflectedPoint, reflectedRay, level - 1, kkr, isSoftShadows).scale(kr));
+                color = color.add(calcColor(reflectedPoint, reflectedRay, level - 1, kkr, isSoftShadows, isSS, depth).scale(kr));
         }
         Double3 kt = g.getMaterial().kT, kkt = k.product(kt);
         if (!kkt.lowerThan(MIN_CALC_COLOR_K)) {
             Ray refractedRay = constructRefractedRay(p, ray, n);
             GeoPoint refractedPoint = findClosestIntersection(refractedRay);
             if (refractedPoint != null)
-                color = color.add(calcColor(refractedPoint, refractedRay, level - 1, kkt, isSoftShadows).scale(kt));
+                color = color.add(calcColor(refractedPoint, refractedRay, level - 1, kkt, isSoftShadows, isSS, depth).scale(kt));
         }
         return color;
     }
@@ -122,9 +130,57 @@ public class RayTracerBasic extends RayTracer {
      *
      * @param geoPoint the geo point we calculate the color of
      * @param ray      ray from the camera to the point
+     * @param isSoftShadows is soft shadow
+     * @param isSS is adaptive super sampling
      * @return the color from the lights at the point
      */
-    private Color calcLocalEffects(GeoPoint geoPoint, Ray ray, Double3 k, boolean isSoftShadows) {
+    private Color calcLocalEffects(GeoPoint geoPoint, Ray ray, Double3 k, boolean isSoftShadows, boolean isSS, int depth) {
+        Color color = Color.BLACK;
+
+        //get color given by every light source
+
+        for (LightSource lightSource : scene.lights) {
+            if (isSoftShadows) {
+                Color color1 = new Color(0, 0, 0);
+                if (!isSS) {
+                    for (Vector[] ls : lightSource.getListL(geoPoint.point))
+                        for (Vector l : ls) {
+                            color1 = getColor(geoPoint, k, lightSource, color1, l, ray);
+                        }
+                    color = color.add(color1.reduce(Math.pow(lightSource.getListL(geoPoint.point).length, 2)));
+                } else {
+                    Vector[][] lss = lightSource.getListL(geoPoint.point);
+                    Color lu = getColor(geoPoint, k, lightSource, color1, lss[0][0], ray);
+                    Color ld = getColor(geoPoint, k, lightSource, color1, lss[lss.length - 1][0], ray);
+                    Color ru = getColor(geoPoint, k, lightSource, color1, lss[0][lss.length - 1], ray);
+                    Color rd = getColor(geoPoint, k, lightSource, color1, lss[lss.length - 1][lss.length - 1], ray);
+                    if (lu.equals(ld) && lu.equals(ru) && lu.equals(rd)) {
+                        color = color.add(lu);
+                    } else {
+                        Color help = helpSuperSampling(lss, lu, ld, ru, rd,
+                                0, 0, lss.length - 1, lss.length - 1, geoPoint, ray, k, lightSource, depth);
+                        color = color.add(help);
+                    }
+                }
+            } else {
+                Vector l = lightSource.getL(geoPoint.point);
+                color = getColor(geoPoint, k, lightSource, color, l, ray);
+            }
+        }
+        return color;
+    }
+
+    /**
+     * get color given by every light source
+     *
+     * @param geoPoint    the geo point we calculate the color of
+     * @param lightSource the light source
+     * @param color1      color of the pixel
+     * @param l           direction from light to point
+     * @param ray         from the camera to the point
+     * @return color of the pixel
+     */
+    private Color getColor(GeoPoint geoPoint, Double3 k, LightSource lightSource, Color color1, Vector l, Ray ray) {
         Vector v = ray.getDir();
         Vector n = geoPoint.geometry.getNormal(geoPoint.point);
         double nv = alignZero(n.dotProduct(v));
@@ -132,43 +188,70 @@ public class RayTracerBasic extends RayTracer {
         int nShininess = geoPoint.geometry.getMaterial().shininess;
         Double3 kd = geoPoint.geometry.getMaterial().kD;
         Double3 ks = geoPoint.geometry.getMaterial().kS;
+        double nl = alignZero(n.dotProduct(l));
 
-        Color color = Color.BLACK;
-        //get color given by every light source
-        if (isSoftShadows) {
-            for (LightSource lightSource : scene.lights) {
-                Color color1 = new Color(0, 0, 0);
-                for (Vector l : lightSource.getListL(geoPoint.point)) {
-                    double nl = alignZero(n.dotProduct(l));
-                    if (nl * nv > 0) { // sign(nl) == sign(nv)
-                        //get transparency of the object
-                        Double3 ktr = transparency(geoPoint, lightSource, l, n);
-                        if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) { //check if the depth of calculation was reached then don't calculate any more
-                            // color is scaled by transparency to get the right color effect
-                            Color lightIntensity = lightSource.getIntensity(geoPoint.point).scale(ktr);
-                            //get effects of the color and add them to the color
-                            color1 = color1.add(calcDiffusive(kd, nl, lightIntensity),
-                                    calcSpecular(ks, l, n, nl, v, nShininess, lightIntensity));
-                        }
-                    }
-                }
-                color = color.add(color1.reduce(lightSource.getListL(geoPoint.point).size()));
-            }
-        } else {
-            for (LightSource lightSource : scene.lights) {
-                Vector l = lightSource.getL(geoPoint.point);
-                double nl = alignZero(n.dotProduct(l));
-                if (nl * nv > 0) {
-                    Double3 ktr = transparency(geoPoint, lightSource, l, n);
-                    if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) {
-                        Color lightIntensity = lightSource.getIntensity(geoPoint.point).scale(ktr);
-                        color = color.add(calcDiffusive(kd, nl, lightIntensity),
-                                calcSpecular(ks, l, n, nl, v, nShininess, lightIntensity));
-                    }
-                }
+        if (nl * nv > 0) { // sign(nl) == sign(nv)
+            //get transparency of the object
+            Double3 ktr = transparency(geoPoint, lightSource, l, n);
+            if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K)) { //check if the depth of calculation was reached then don't calculate any more
+                // color is scaled by transparency to get the right color effect
+                Color lightIntensity = lightSource.getIntensity(geoPoint.point).scale(ktr);
+                //get effects of the color and add them to the color
+                color1 = color1.add(calcDiffusive(kd, nl, lightIntensity),
+                        calcSpecular(ks, l, n, nl, v, nShininess, lightIntensity));
             }
         }
-        return color;
+        return color1;
+    }
+
+    /**
+     * the function helps calcLocalEffects to get the color with super sampling
+     *
+     * @param lss         the matrix of rays from the light
+     * @param lu          the left up point
+     * @param ld          the left down point
+     * @param ru          the right up point
+     * @param rd          the right down point
+     * @param x           index x of left up
+     * @param y           index y of left up
+     * @param z           index x of right down
+     * @param w           index y of right down
+     * @param geoPoint    the geo point we calculate the color of
+     * @param ray         ray from the camera to the point
+     * @param lightSource the current light source
+     * @param depth       the deep of the recursion
+     * @return the color from the lights at the point
+     */
+    private Color helpSuperSampling(Vector[][] lss, Color lu, Color ld, Color ru, Color rd, int x, int y, int z, int w, GeoPoint geoPoint, Ray ray, Double3 k, LightSource lightSource, int depth) {
+        if (depth == 0)
+            return lu;
+        Color col = Color.BLACK;
+        Color mu = getColor(geoPoint, k, lightSource, Color.BLACK, lss[x][(y + w) / 2], ray);
+        Color md = getColor(geoPoint, k, lightSource, Color.BLACK, lss[z][(y + w) / 2], ray);
+        Color mm = getColor(geoPoint, k, lightSource, Color.BLACK, lss[(x + z) / 2][(y + w) / 2], ray);
+        Color lm = getColor(geoPoint, k, lightSource, Color.BLACK, lss[(x + z) / 2][y], ray);
+        Color rm = getColor(geoPoint, k, lightSource, Color.BLACK, lss[(x + z) / 2][w], ray);
+        if (lu.equals(mu) && lu.equals(mm) && lu.equals(lm))
+            col = col.add(lu);
+        else
+            col = col.add(helpSuperSampling(lss, lu, lm, mu, mm, x, y, (x + z) / 2, (y + w) / 2,
+                    geoPoint, ray, k, lightSource, depth - 1));
+        if (mu.equals(ru) && mu.equals(mm) && mu.equals(rm))
+            col = col.add(mu);
+        else
+            col = col.add(helpSuperSampling(lss, mu, mm, ru, rm, x, (y + w) / 2, (x + z) / 2, w,
+                    geoPoint, ray, k, lightSource, depth - 1));
+        if (lm.equals(mm) && lm.equals(ld) && lm.equals(md))
+            col = col.add(lm);
+        else
+            col = col.add(helpSuperSampling(lss, lm, ld, mm, md, (x + z) / 2, y, z, (y + w) / 2,
+                    geoPoint, ray, k, lightSource, depth - 1));
+        if (mm.equals(rm) && mm.equals(md) && mm.equals(rd))
+            col = col.add(mm);
+        else
+            col = col.add(helpSuperSampling(lss, mm, md, rm, rd, (x + z) / 2, (y + w) / 2, z, w,
+                    geoPoint, ray, k, lightSource, depth - 1));
+        return col.reduce(4);
     }
 
     /**
