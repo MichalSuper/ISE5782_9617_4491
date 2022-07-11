@@ -16,8 +16,8 @@ public class MiniProject1 {
                 .setBackground(new Color(34,14,90))
                 .setAmbientLight(new AmbientLight(new Color(java.awt.Color.yellow)
                         , new Double3(0))).build();
-        Camera camera = new Camera(new Point(-80, 100, 20), new Vector(0.8, -1, 0),
-                new Vector(0, 0, 1))
+        Camera camera = new Camera(new Point(-80, 100, 35), new Vector(0.8, -1, -0.2),
+                new Vector(1,-1 , 9))
                 .setVPSize(200, 200).setVPDistance(400) //
                 .setRayTracer(new RayTracerBasic(scene));
         Point D = new Point(11.52, 15.04, 5);
@@ -59,13 +59,13 @@ public class MiniProject1 {
                         .setMaterial(new Material().setKr(0.8)),
                 new Sphere(new Point(2.3, 2, 2), 2)
                         .setEmission(new Color(2, 194, 139))
-                        .setMaterial(new Material().setKd(0.3).setKs(0.2).setShininess(10)),
+                        .setMaterial(new Material().setKd(0.3).setKs(0.2).setKr(0.3).setShininess(10)),
                 new Sphere(new Point(5, 5, 2), 2)
                         .setEmission(new Color(59, 19, 195))
-                        .setMaterial(new Material().setKd(0.3).setKs(0.2).setShininess(10)),
+                        .setMaterial(new Material().setKd(0.3).setKs(0.2).setKr(0.3).setShininess(10)),
                 new Sphere(new Point(3.65, 3.5, 5.36712), 2)
                         .setEmission(new Color(161, 1, 175))
-                        .setMaterial(new Material().setKd(0.3).setKs(0.2).setShininess(10)),
+                        .setMaterial(new Material().setKd(0.3).setKs(0.2).setKr(0.3).setShininess(10)),
                 new Polygon(D, E, F, G).setEmission(new Color(173, 220, 18))
                         .setMaterial(new Material().setKd(1)),
                 new Polygon(D, G, K, H).setEmission(new Color(173, 220, 18))
@@ -145,20 +145,20 @@ public class MiniProject1 {
                         .setEmission(new Color(217, 12, 33))
                         .setMaterial(new Material().setKd(0.3).setKs(0.2).setShininess(10))
         );
-        pyramid(scene, L, M, R, S, new Color(192,0,181), 0.3, 0.2, 10);
-        pyramid(scene, T, U, V, W, new Color(106,13,173), 0.3, 0.2, 10);
+        pyramid(scene, L, M, R, S, new Color(192,0,181), 0.3, 0.2, 10, true);
+        pyramid(scene, T, U, V, W, new Color(106,13,173), 0.3, 0.2, 10, true);
         pyramid(scene, new Point(-9.15, -7.24, 0), new Point(-9.41, -7.54, 0),
                 new Point(-9.55, -7.224, 0), new Point(-9, -7, 2), new Color(73, 113, 13),
-                0.3, 0.2, 10);
+                0.3, 0.2, 10, false);
         pyramid(scene, new Point(-11.94, -6.85, 0), new Point(-11.92, -7.26, 0),
                 new Point(-12.32, -7.01, 0), new Point(-12.64, -7.18, 2), new Color(73, 113, 13),
-                0.3, 0.2, 10);
+                0.3, 0.2, 10, false);
         pyramid(scene, new Point(-10.32, -7.44, 0), new Point(-10.55, -7.11, 0),
                 new Point(-10.68, -7.49, 0), new Point(-10, -7, 4), new Color(73, 113, 13),
-                0.3, 0.2, 10);
+                0.3, 0.2, 10, false);
         pyramid(scene, new Point(-11.49, -7.54, 0), new Point(-11.18, -7.75, 0),
                 new Point(-11.24, -7.53, 0), new Point(-11.65, -7.8, 5.5), new Color(73, 113, 13),
-                0.3, 0.2, 10);
+                0.3, 0.2, 10, false);
         pyramid3(scene,12, 18, 0,new Color(73, 113, 13), 0.3, 0.2, 10);
         pyramid2(scene,-3.78, 0.32, 0, new Color(73, 113, 13),0.3, 0.2, 10);
         pyramid2(scene,11.15,24.75,0, new Color(73, 113, 13),0.3, 0.2, 10);
@@ -171,19 +171,19 @@ public class MiniProject1 {
         pyramid3(scene, -25.21,7.71,0, new Color(73, 113, 13),0.3, 0.2, 10);
         pyramid2(scene, -20.74,25.11,0, new Color(73, 113, 13),0.3, 0.2, 10);
 
-        scene.lights.add(new PointLight(new Color(131, 131, 131), new Point(-100, 100, 600))
+        scene.lights.add(new PointLight(new Color(30, 30, 30), new Point(-100, 100, 600))
                 .setKl(0.0004).setKq(0.0000006));
-        scene.lights.add(new SpotLight(new Color(100, 100, 100), new Point(30, 25, 40),
-                new Vector(-2, -1, -2))
+        scene.lights.add(new SpotLight(new Color(200, 200, 200), new Point(25, 25, 35),
+                new Vector(-2, -1, -10))
                 .setKc(1).setKl(0.0004).setKq(0.0000006));
         scene.lights.add(new DirectionalLight(new Color(100, 100, 100),
-                new Vector(-18, -11, -20)));
+                new Vector(-3, -18, -3)));
 
 
-        camera.setImageWriter(new ImageWriter("miniProject", 1000, 1000)) //
-                .setMultithreading(4)
+        camera.setImageWriter(new ImageWriter("miniProject", 800, 800)) //
                 .setAntiAliasing(true)
                 .setSS(true)
+                .setMultithreading(4)
                 .renderImage() //
                 .writeToImage();
     }
@@ -191,35 +191,35 @@ public class MiniProject1 {
     void pyramid3(Scene scene, double x, double y, double z,Color col, double kd, double ks, int shine){
         pyramid(scene, new Point(x, y, z), new Point(x-0.62, y-0.21, z),
                 new Point(x-0.3, y-0.77, z), new Point(x+0.92, y-0.52, z+4), col,
-                kd, ks, shine);
+                kd, ks, shine, false);
         pyramid(scene, new Point(x-1.16, y-0.61, z), new Point(x-1.13, y-1.24, z),
                 new Point(x-1.62, y-0.93, z), new Point(x-1.75, y-1.38, z+2), col,
-                kd, ks, shine);
+                kd, ks, shine, false);
         pyramid(scene, new Point(x+0.51, y+1.26, z), new Point(x-0.02, y+1.23, z),
                 new Point(x-0.51, y+1.7, z), new Point(x+0.56, y+1.7, z+2), col,
-                kd, ks, shine);
+                kd, ks, shine, false);
     }
 
     void pyramid2(Scene scene, double x, double y, double z,Color col, double kd, double ks, int shine){
         pyramid(scene, new Point(x, y, z), new Point(x-0.1, y-0.77, z),
                 new Point(x-0.62, y-0.1, z), new Point(x-0.54, y+0.89, z+3.8), col,
-                kd, ks, shine);
+                kd, ks, shine, false);
         pyramid(scene, new Point(x-0.44, y-0.92, z), new Point(x-0.46, y-1.27, z),
                 new Point(x-1.09, y-0.91, z), new Point(x-1.93, y-0.81, z+1.8), col,
-                kd, ks, shine);
+                kd, ks, shine, false);
     }
 
-    void pyramid(Scene scene, Point a, Point b, Point c, Point d, Color col, double kd, double ks, int shine) {
+    void pyramid(Scene scene, Point a, Point b, Point c, Point d, Color col, double kd, double ks, int shine, boolean isFloor) {
         scene.getGeometries().add(
-                new Triangle(a, b, c).setEmission(col)
-                        .setMaterial(new Material().setKd(kd).setKs(ks).setShininess(shine)),
                 new Triangle(a, b, d).setEmission(col)
                         .setMaterial(new Material().setKd(kd).setKs(ks).setShininess(shine)),
                 new Triangle(c, b, d).setEmission(col)
                         .setMaterial(new Material().setKd(kd).setKs(ks).setShininess(shine)),
                 new Triangle(a, c, d).setEmission(col)
-                        .setMaterial(new Material().setKd(kd).setKs(ks).setShininess(shine))
-        );
+                        .setMaterial(new Material().setKd(kd).setKs(ks).setShininess(shine)));
+        if(isFloor)
+            scene.getGeometries().add(new Triangle(a, b, c).setEmission(col)
+                    .setMaterial(new Material().setKd(kd).setKs(ks).setShininess(shine)));
 
     }
 }

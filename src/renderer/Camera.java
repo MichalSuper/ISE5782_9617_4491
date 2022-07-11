@@ -5,7 +5,6 @@ import multiThreading.ThreadPool;
 import primitives.*;
 import java.util.MissingResourceException;
 import java.util.Random;
-
 import static java.lang.Math.sqrt;
 import static primitives.Util.*;
 
@@ -60,8 +59,8 @@ public class Camera {
         return this;
     }
 
-    private int _N = 9;
-    private int _M = 9;
+    private int _N = 8;
+    private int _M = 8;
 
     /*
     isAntiAliasing- for anti aliasing
@@ -534,6 +533,21 @@ public class Camera {
         return averageColor;
     }
 
+    /**
+     * the function helps castRay to get the color with super sampling
+     *
+     * @param rays        the matrix of rays from the pixel
+     * @param lu          the left up point
+     * @param ld          the left down point
+     * @param ru          the right up point
+     * @param rd          the right down point
+     * @param x           index x of left up
+     * @param y           index y of left up
+     * @param z           index x of right down
+     * @param w           index y of right down
+     * @param depth       the deep of the recursion
+     * @return the color in the pixel
+     */
     private Color helpSuperSampling(Ray[][] rays, Color lu, Color ld, Color ru, Color rd, int x, int y, int z, int w, int depth) {
         if (depth == 0)
             return lu;

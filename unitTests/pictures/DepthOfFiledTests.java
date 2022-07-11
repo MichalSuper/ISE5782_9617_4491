@@ -38,15 +38,11 @@ public class DepthOfFiledTests {
                         .setKc( 1).setKl(0.0004).setKq(0.0000006));
         scene.lights.add(new PointLight(new Color(500,500,500),new Point(0,0,100)));
 
+
         camera.setImageWriter(new ImageWriter("depthOfField", 500, 500)) //
                 .setDepthOfFiled(true)
                 .setFPDistance(400)
                 .setApertureSize(1)
-                .renderImage() //
-                .writeToImage();
-
-        camera.setImageWriter(new ImageWriter("antiAnalysing", 500, 500)) //
-                .setAntiAliasing(true)
                 .renderImage() //
                 .writeToImage();
     }

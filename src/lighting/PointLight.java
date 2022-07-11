@@ -13,7 +13,7 @@ public class PointLight extends Light implements LightSource{
 
     private Point position;
     private double kC, kL, kQ;
-    private double radius=50;
+    private double radius=10;
 
     private final int numOfRays=10;
     /**

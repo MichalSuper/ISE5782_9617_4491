@@ -28,7 +28,10 @@ public class SoftShadow {
                 .setKc(1).setKl(0.0004).setKq(0.0000006));
 
         camera.setImageWriter(new ImageWriter("softShadow", 500, 500)) //
-                .setSoftShadows(true)
+                .setDepthOfFiled(true)
+                .setMultithreading(4)
+                .setSS(true)
+                .setDepth(3)
                 .renderImage() //
                 .writeToImage();
     }
